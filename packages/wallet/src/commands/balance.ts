@@ -4,7 +4,7 @@ import { getWriter } from "@services/output";
 const wait = (duration: number) => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(undefined);
+      resolve(null);
     }, duration);
   });
 };

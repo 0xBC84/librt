@@ -11,6 +11,9 @@
     "pack": "lerna run --stream pack",
     "prepare": "husky install"
   },
+  "resolutions": {
+    "eslint-plugin-unicorn": "^41.0.0"
+  },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.5",
     "@typechain/ethers-v5": "^9.0.0",
@@ -21,7 +24,7 @@
     "@typescript-eslint/parser": "^5.14.0",
     "eslint": "^8.10.0",
     "eslint-config-next": "^12.1.0",
-    "eslint-config-oclif": "^3.1.2",
+    "eslint-config-oclif": "^4.0.0",
     "eslint-config-oclif-typescript": "^1.0.2",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",

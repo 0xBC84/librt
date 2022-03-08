@@ -26,10 +26,7 @@ module.exports = {
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "@typescript-eslint/no-unused-vars": ["error"],
     "@typescript-eslint/ban-types": 0,
-    "react/jsx-no-target-blank": 0,
-    "react/no-unescaped-entities": 0,
-    "react/display-name": 0,
-    "react/prop-types": 0
+    "node/no-missing-import": 0
   },
   settings: {
     react: {
