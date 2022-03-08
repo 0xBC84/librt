@@ -5,15 +5,9 @@
   ],
   "scripts": {
     "setup": "yarn install && lerna bootstrap",
-    "dev": "yarn dev:lib && yarn dev:ui",
-    "dev:lib": "lerna run --stream --scope='*/lib-*' dev",
-    "dev:ui": "lerna run --stream --scope='*/ui-*' dev",
-    "build": "yarn build:lib && yarn build:ui",
-    "build:lib": "lerna run --stream --scope='*/lib-*' build",
-    "build:ui": "lerna run --stream --scope='*/ui-*' build",
-    "lint": "yarn lint:lib && yarn lint:ui",
-    "lint:lib": "lerna run --stream --scope='*/lib-*' lint",
-    "lint:ui": "lerna run --stream --scope='*/ui-*' lint",
+    "dev": "lerna run --stream dev",
+    "build": "lerna run --stream build",
+    "lint": "lerna run --stream lint",
     "pack": "lerna run --stream pack",
     "prepare": "husky install"
   },
