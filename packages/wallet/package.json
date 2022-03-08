@@ -1,0 +1,45 @@
+{
+  "name": "@lbrts/wallet",
+  "version": "0.0.1",
+  "bin": {
+    "wallet": "bin/run"
+  },
+  "dependencies": {
+    "@oclif/core": "^1.0.11",
+    "@oclif/plugin-help": "^5.1.10",
+    "@oclif/plugin-plugins": "^2.0.11",
+    "bn.js": "^4.11.9",
+    "chalk": "^4.1.2",
+    "cli-ux": "^6.0.6",
+    "enquirer": "^2.3.6"
+  },
+  "dirname": "oex",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "files": [
+    "/bin",
+    "/dist",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "main": "dist/index.js",
+  "oclif": {
+    "bin": "wallet",
+    "commands": "./dist/commands",
+    "plugins": [
+      "@oclif/plugin-help"
+    ],
+    "topicSeparator": ":",
+    "topics": {}
+  },
+  "scripts": {
+    "build": "shx rm -rf dist && tsc -b && tsc-alias && oclif manifest && oclif readme",
+    "dev": "tsc -w & tsc-alias -w",
+    "lint": "yarn lint:prettier && yarn lint:prettier",
+    "lint:prettier": "prettier --loglevel silent --write .",
+    "lint:eslint": "eslint . --fix",
+    "test": "mocha --forbid-only \\\"test/**/*.test.ts\\\""
+  },
+  "types": "dist/index.d.ts"
+}

@@ -1,0 +1,5 @@
+/.cache/*
+!/.cache/.gitkeep
+/.config/*
+!/.config/.gitkeep
+!/.hasura/.gitkeep

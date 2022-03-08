@@ -1,0 +1,10 @@
+.env
+.idea
+cache
+artifacts
+node_modules
+.DS_Store
+*.log
+deployments/hardhat
+deployments/localhost
+typechain
