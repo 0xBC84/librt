@@ -1,8 +1,8 @@
 {
-  "name": "@lbrts/wallet",
+  "name": "@librt/wallet",
   "version": "0.0.1",
   "bin": {
-    "lbrts-wallet": "bin/run"
+    "librt-wallet": "bin/run"
   },
   "dependencies": {
     "@oclif/core": "^1.0.11",
@@ -25,7 +25,7 @@
   ],
   "main": "dist/index.js",
   "oclif": {
-    "bin": "lbrts-wallet",
+    "bin": "librt-wallet",
     "commands": "./dist/commands",
     "plugins": [
       "@oclif/plugin-help"
