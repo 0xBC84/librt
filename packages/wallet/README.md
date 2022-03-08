@@ -27,23 +27,7 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`librt-wallet balance`](#librt-wallet-balance)
 * [`librt-wallet help [COMMAND]`](#librt-wallet-help-command)
-
-## `librt-wallet balance`
-
-Provides balance operations.
-
-```
-USAGE
-  $ librt-wallet balance
-
-DESCRIPTION
-  Provides balance operations.
-
-EXAMPLES
-  $ wallet balance
-```
 
 ## `librt-wallet help [COMMAND]`
 
@@ -63,5 +47,5 @@ DESCRIPTION
   Display help for librt-wallet.
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.9/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.12/src/commands/help.ts)_
 <!-- commandsstop -->
