@@ -1,4 +1,4 @@
-LBRTS
+LIBRT
 
 ## Usage
 
@@ -12,6 +12,9 @@ docker-compose run --rm node lerna run --stream lint
 docker-compose run --rm node lerna run --stream test
 docker-compose run --rm node lerna run --stream dev
 docker-compose run --rm node lerna run --stream deploy
+
+# dApps.
+docker-compose run --rm node librt-wallet
 ```
 
 ## Local Environment
