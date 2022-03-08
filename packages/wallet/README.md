@@ -27,7 +27,23 @@ USAGE
 # Commands
 
 <!-- commands -->
+* [`librt-wallet balance`](#librt-wallet-balance)
 * [`librt-wallet help [COMMAND]`](#librt-wallet-help-command)
+
+## `librt-wallet balance`
+
+Provides balance operations.
+
+```
+USAGE
+  $ librt-wallet balance
+
+DESCRIPTION
+  Provides balance operations.
+
+EXAMPLES
+  $ wallet balance
+```
 
 ## `librt-wallet help [COMMAND]`
 

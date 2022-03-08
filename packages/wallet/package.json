@@ -37,6 +37,7 @@
     "build": "shx rm -rf dist && tsc -b && tsc-alias && oclif manifest && oclif readme",
     "dev": "tsc -w & tsc-alias -w",
     "lint": "yarn lint:prettier && yarn lint:eslint",
+    "lint:prettier:write": "prettier --write .",
     "lint:prettier": "prettier --check .",
     "lint:eslint": "eslint ."
   },
