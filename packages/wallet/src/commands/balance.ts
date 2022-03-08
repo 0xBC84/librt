@@ -4,10 +4,10 @@ import { getWriter } from "@services/output";
 const wait = (duration: number) => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(undefined)
-    }, duration)
-  })
-}
+      resolve(undefined);
+    }, duration);
+  });
+};
 
 export default class Balance extends Command {
   static description = "Provides balance operations.";
@@ -24,7 +24,7 @@ export default class Balance extends Command {
     const init = pending("contacting contract");
     init.start();
 
-    await wait(2000)
+    await wait(2000);
 
     init.stop();
     success("balance: 0");

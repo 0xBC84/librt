@@ -27,23 +27,23 @@ export const getWriter = (command: Command) => {
 };
 
 const pending = () => {
-  return chalk.reset.inverse.blueBright(" PENDING ")
+  return chalk.reset.inverse.blueBright(" PENDING ");
 };
 
 const success = () => {
-  return chalk.reset.inverse.greenBright(" SUCCESS ")
+  return chalk.reset.inverse.greenBright(" SUCCESS ");
 };
 
 const error = () => {
-  return chalk.reset.inverse.red(" ERROR ")
+  return chalk.reset.inverse.red(" ERROR ");
 };
 
 const warning = () => {
-  return chalk.reset.inverse.yellowBright(" WARNING ")
+  return chalk.reset.inverse.yellowBright(" WARNING ");
 };
 
 export const label = (...args: Array<string | number>) => {
-  return chalk.grey(...args)
+  return chalk.grey(...args);
 };
 
 export const value = (...args: Array<string | number>) => {
