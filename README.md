@@ -23,8 +23,8 @@ Run CLI against a local HardHat Ethereum network.
 
 ```
 // .env
-LIBERTAS_PROVIDER="http://hardhat:8545"
-LIBERTAS_NETWORK="localhost"
+LIBRT_PROVIDER="http://hardhat:8545"
+LIBRT_NETWORK="localhost"
 ```
 
 ```
