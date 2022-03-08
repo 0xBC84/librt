@@ -1,14 +1,14 @@
 import chalk from "chalk";
+import { CliUx } from "@oclif/core"
 import { Command } from "@oclif/core";
-import { cli } from "cli-ux";
 
 export const getWriter = (command: Command) => {
   return {
     pending: (...args: string[]) => {
       const message = chalk(pending(), ...args);
       return {
-        start: () => cli.action.start(message),
-        stop: () => cli.action.stop(),
+        start: () => CliUx.ux.action.start(message),
+        stop: () => CliUx.ux.action.stop(),
       };
     },
     success: (...args: string[]) => {
