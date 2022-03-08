@@ -11,7 +11,6 @@ module.exports = {
     }
   },
   extends: [
-    "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended"
   ],
@@ -27,10 +26,5 @@ module.exports = {
     "@typescript-eslint/no-unused-vars": ["error"],
     "@typescript-eslint/ban-types": 0,
     "node/no-missing-import": 0
-  },
-  settings: {
-    react: {
-      version: "detect"
-    }
   }
 }
