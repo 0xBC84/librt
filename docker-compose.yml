@@ -3,6 +3,7 @@ services:
   node:
     build: ./.docker/node/build
     working_dir: /srv
+    stdin_open: true
     env_file:
       - .env
     environment:
@@ -14,6 +15,7 @@ services:
   hardhat:
     build: ./.docker/node/build
     working_dir: /srv
+    stdin_open: true
     command: ["lerna", "run", "--stream", "node"]
     env_file:
       - .env

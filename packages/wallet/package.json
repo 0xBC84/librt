@@ -36,8 +36,8 @@
   "scripts": {
     "build": "shx rm -rf dist && tsc -b && tsc-alias && oclif manifest && oclif readme",
     "dev": "tsc -w & tsc-alias -w",
-    "lint": "yarn lint:prettier && yarn lint:prettier",
-    "lint:prettier": "prettier --loglevel silent .",
+    "lint": "yarn lint:prettier && yarn lint:eslint",
+    "lint:prettier": "prettier --check .",
     "lint:eslint": "eslint .",
     "test": "mocha --forbid-only \\\"test/**/*.test.ts\\\""
   },
