@@ -7,10 +7,10 @@ LBRTS
 docker-compose run --rm node yarn setup
 
 # Build.
-docker-compose run --rm node lerna run build
-docker-compose run --rm node lerna run lint
-docker-compose run --rm node lerna run test
-docker-compose run --rm node lerna run dev
+docker-compose run --rm node lerna run --stream build
+docker-compose run --rm node lerna run --stream lint
+docker-compose run --rm node lerna run --stream test
+docker-compose run --rm node lerna run --stream dev
 docker-compose run --rm node lerna run --stream deploy
 ```
 
