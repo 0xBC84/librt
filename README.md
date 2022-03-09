@@ -15,6 +15,9 @@ docker-compose run --rm node lerna run --stream deploy
 
 # dApps.
 docker-compose run --rm node librt-wallet
+
+# Hardhat.
+docker-compose up -d hardhat
 ```
 
 ## Local Environment

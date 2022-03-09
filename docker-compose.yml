@@ -16,7 +16,7 @@ services:
     build: ./.docker/node/build
     working_dir: /srv
     stdin_open: true
-    command: ["lerna", "run", "--stream", "node"]
+    command: ["lerna", "run", "--stream", "--scope", "@librt/node", "start"]
     env_file:
       - .env
     environment:

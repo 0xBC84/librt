@@ -1,0 +1,7 @@
+{
+  "name": "@librt/node",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "hardhat node --hostname 0.0.0.0"
+  }
+}

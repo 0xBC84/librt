@@ -1,6 +1,5 @@
 import chalk from "chalk";
-import { CliUx } from "@oclif/core";
-import { Command } from "@oclif/core";
+import { CliUx, Command } from "@oclif/core";
 
 export const getWriter = (command: Command) => {
   return {
