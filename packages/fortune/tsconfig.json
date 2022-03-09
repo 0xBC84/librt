@@ -15,5 +15,6 @@
       "@services/*": ["services/*"]
     }
   },
-  "include": ["src/**/*"]
+  "files": ["hardhat.config.ts"],
+  "include": ["src/**/*", "deploy" ,"hardhat.config.ts"]
 }
