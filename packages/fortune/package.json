@@ -1,0 +1,11 @@
+{
+  "name": "@librt/fortune",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "hardhat clean && hardhat compile",
+    "deploy": "hardhat deploy --network $LIBRT_NETWORK"
+  },
+  "dependencies": {
+    "ethers": "^5.5.4"
+  }
+}
