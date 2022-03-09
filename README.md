@@ -14,7 +14,6 @@ docker-compose run --rm node lerna run --stream dev
 docker-compose run --rm node lerna run --stream deploy
 
 # dApps.
-docker-compose run --rm node librt-wallet
 
 # Hardhat.
 docker-compose up -d hardhat
@@ -26,11 +25,11 @@ Run CLI against a local HardHat Ethereum network.
 
 ```
 // .env
-LIBRT_PROVIDER="http://hardhat:8545"
+LIBRT_NODE="http://hardhat:8545"
 LIBRT_NETWORK="localhost"
 ```
 
 ```
 docker-compose up hardhat
-docker-compose run --rm node lm ...
+docker-compose run --rm node librt...
 ```
