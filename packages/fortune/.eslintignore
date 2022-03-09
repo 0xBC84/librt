@@ -1,3 +1,9 @@
 /dist
 /bin
+/src/contracts
+/cache
+/artifacts
+/deployments
+/types
 README.md
+

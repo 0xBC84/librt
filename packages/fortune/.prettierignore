@@ -6,3 +6,4 @@ src/contracts
 cache
 artifacts
 deployments
+types
