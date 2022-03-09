@@ -2,7 +2,7 @@
   "name": "@librt/chain",
   "version": "0.0.1",
   "scripts": {
-    "build:data": "wget https://chainid.network/chains.json",
+    "build:data": "rm chains.json && wget https://chainid.network/chains.json",
     "build": "tsc"
   }
 }
