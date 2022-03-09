@@ -2,3 +2,7 @@ dist
 bin
 README.md
 oclif.manifest.json
+src/contracts
+cache
+artifacts
+deployments
