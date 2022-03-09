@@ -18,16 +18,14 @@ const account = (network: string): NetworkUserConfig | undefined => {
   return {
     url,
     accounts: {
-      mnemonic
+      mnemonic,
     },
   };
 };
 
 const config: HardhatUserConfig = {
   solidity: {
-    compilers: [
-      { version: "0.8.9" },
-    ],
+    compilers: [{ version: "0.8.9" }],
   },
   paths: {
     sources: "src/contracts",
@@ -36,11 +34,11 @@ const config: HardhatUserConfig = {
     outDir: "types",
   },
   networks: {
-    localhost: account("localhost")
+    localhost: account("localhost"),
   },
   namedAccounts: {
     deployer: 0,
-  }
+  },
 };
 
 export default config;
