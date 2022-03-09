@@ -30,7 +30,7 @@ const config: HardhatUserConfig = {
     ],
   },
   paths: {
-    sources: "src",
+    sources: "src/contracts",
   },
   typechain: {
     outDir: "types",

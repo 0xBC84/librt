@@ -8,10 +8,13 @@
     "@oclif/core": "^1.5.2",
     "@oclif/plugin-help": "^5.1.12",
     "@oclif/plugin-plugins": "^2.1.0",
+    "@walletconnect/client": "^2.0.0-beta.23",
+    "@walletconnect/ethereum-provider": "^2.0.0-beta.23",
     "bn.js": "^5.2.0",
     "chalk": "^4.1.2",
     "enquirer": "^2.3.6",
-    "ethers": "^5.5.4"
+    "ethers": "^5.5.4",
+    "pino": "^7.8.1"
   },
   "dirname": "oex",
   "engines": {

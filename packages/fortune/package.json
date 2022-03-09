@@ -1,11 +1,51 @@
 {
   "name": "@librt/fortune",
   "version": "0.0.1",
-  "scripts": {
-    "build": "hardhat clean && hardhat compile",
-    "deploy": "hardhat deploy --network $LIBRT_NETWORK"
+  "bin": {
+    "librt-fortune": "bin/run"
   },
   "dependencies": {
-    "ethers": "^5.5.4"
+    "@oclif/core": "^1.5.2",
+    "@oclif/plugin-help": "^5.1.12",
+    "@oclif/plugin-plugins": "^2.1.0",
+    "@walletconnect/client": "^2.0.0-beta.23",
+    "@walletconnect/ethereum-provider": "^2.0.0-beta.23",
+    "bn.js": "^5.2.0",
+    "chalk": "^4.1.2",
+    "enquirer": "^2.3.6",
+    "ethers": "^5.5.4",
+    "pino": "^7.8.1",
+    "@librt/chain": "*"
+  },
+  "dirname": "oex",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "files": [
+    "/bin",
+    "/dist",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "main": "dist/index.js",
+  "oclif": {
+    "bin": "librt-fortune",
+    "commands": "./dist/commands",
+    "plugins": [
+      "@oclif/plugin-help"
+    ],
+    "topicSeparator": ":",
+    "topics": {}
+  },
+  "scripts": {
+    "build": "yarn build:contract && yarn build:cli",
+    "build:contract": "hardhat clean && hardhat compile",
+    "build:cli": "shx rm -rf dist && tsc -b && tsc-alias && oclif manifest && oclif readme",
+    "deploy": "hardhat deploy --network $LIBRT_NETWORK",
+    "dev": "tsc -w & tsc-alias -w",
+    "lint": "yarn lint:prettier && yarn lint:eslint",
+    "lint:prettier:write": "prettier --write .",
+    "lint:prettier": "prettier --check .",
+    "lint:eslint": "eslint ."
   }
 }

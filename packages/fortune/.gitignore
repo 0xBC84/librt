@@ -1,5 +1,11 @@
-.env
-cache
-artifacts
-deployments/hardhat
-deployments/localhost
+*-debug.log
+*-error.log
+/.nyc_output
+/dist
+/lib
+/package-lock.json
+/tmp
+node_modules
+oclif.manifest.json
+/deployments/localhost
+/deployments/hardhat

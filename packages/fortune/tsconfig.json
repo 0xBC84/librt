@@ -1,13 +1,19 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "declaration": true,
+    "importHelpers": true,
     "module": "commonjs",
+    "outDir": "dist",
+    "rootDir": "src",
     "strict": true,
+    "target": "esnext",
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "forceConsistentCasingInFileNames": true,
-    "outDir": "dist"
+    "baseUrl": "./src",
+    "paths": {
+      "@services/*": ["services/*"]
+    }
   },
-  "files": ["hardhat.config.ts"],
-  "include": ["hardhat.config.ts", "./tasks", "./scripts", "./deploy", "./test"]
+  "include": ["src/**/*"]
 }
