@@ -29,6 +29,7 @@ USAGE
 <!-- commands -->
 * [`librt-wallet balance`](#librt-wallet-balance)
 * [`librt-wallet help [COMMAND]`](#librt-wallet-help-command)
+* [`librt-wallet pair`](#librt-wallet-pair)
 
 ## `librt-wallet balance`
 
@@ -64,4 +65,22 @@ DESCRIPTION
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.12/src/commands/help.ts)_
+
+## `librt-wallet pair`
+
+Create connection pair.
+
+```
+USAGE
+  $ librt-wallet pair -u <value>
+
+FLAGS
+  -u, --uri=<value>  (required) Connection URI
+
+DESCRIPTION
+  Create connection pair.
+
+EXAMPLES
+  $ wallet pair
+```
 <!-- commandsstop -->

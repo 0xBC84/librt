@@ -1,7 +1,6 @@
 import WalletConnectClient, { CLIENT_EVENTS } from "@walletconnect/client";
 import { PairingTypes } from "@walletconnect/types";
 import { Command } from "@oclif/core";
-import chain from "@librt/chain";
 
 export default class Example extends Command {
   static description = "Example.";
@@ -12,70 +11,61 @@ export default class Example extends Command {
 
   static args = [];
 
-  async run() {
+  async run(): Promise<void> {
     // @todo Get `projectId` from getConfig()
     const client = await WalletConnectClient.init({
       projectId: "004cbcf1b212d7e8786473c4cd8073cc",
       relayUrl: "wss://relay.walletconnect.com",
       metadata: {
         name: "librt",
-        description: "",
-        url: "#",
+        description: "librt",
+        url: "https://walletconnect.com/",
         icons: [],
       },
     });
 
-    // @todo Use getConfig().
-    const network: string | undefined = process.env.LIBRT_NETWORK;
-    const node: string | undefined = process.env.LIBRT_NODE;
-    if (!network) throw new Error("Network not configured");
-    if (!node) throw new Error("Node not configured");
-
-    // @todo Use getConfig().
-    const chainData = chain.find((chain) => chain?.shortName === network);
-    if (!chainData || !chainData.chainId) throw new Error("Network not found");
-
-    // const provider = new EthereumProvider({
-    //   client,
-    //   chainId: chainData.chainId,
-    //   rpc: {
-    //     custom: {
-    //       [chainData.chainId]: node,
-    //     },
-    //   },
-    // });
-
-    const session = client.connect({
-      permissions: {
-        blockchain: {
-          chains: ["eip155:1"],
+    const createSession = (pairing?: { topic: string }) => {
+      client.connect({
+        pairing,
+        permissions: {
+          blockchain: {
+            chains: ["eip155:42"],
+          },
+          jsonrpc: {
+            methods: [
+              "eth_sendTransaction",
+              "personal_sign",
+              "eth_signTypedData",
+            ],
+          },
         },
-        jsonrpc: {
-          methods: [
-            "eth_sendTransaction",
-            "personal_sign",
-            "eth_signTypedData",
-          ],
-        },
-      },
+      });
+    };
+
+    createSession();
+
+    return new Promise(() => {
+      client.on(
+        CLIENT_EVENTS.pairing.proposal,
+        async (proposal: PairingTypes.Proposal) => {
+          this.log("pairing proposed");
+          this.log(JSON.stringify(proposal, null, "  "));
+        }
+      );
+
+      client.on(
+        CLIENT_EVENTS.pairing.created,
+        async (proposal: PairingTypes.Created) => {
+          this.log("pairing created");
+          this.log(JSON.stringify(proposal, null, "  "));
+          const pairing = { topic: proposal.topic };
+          createSession(pairing);
+        }
+      );
+
+      client.on(CLIENT_EVENTS.session.created, () => {
+        process.exit();
+      });
     });
-
-    client.on(
-      CLIENT_EVENTS.pairing.proposal,
-      async (proposal: PairingTypes.Proposal) => {
-        // eslint-disable-next-line no-console
-        console.log(proposal);
-      }
-    );
-
-    client.on(
-      CLIENT_EVENTS.pairing.created,
-      async (proposal: PairingTypes.Created) => {
-        // eslint-disable-next-line no-console
-        console.log("created", proposal);
-      }
-    );
-
-    await session;
   }
 }
