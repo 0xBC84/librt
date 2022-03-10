@@ -24,6 +24,7 @@
     "@typescript-eslint/eslint-plugin": "^5.14.0",
     "@typescript-eslint/eslint-plugin-tslint": "^5.14.0",
     "@typescript-eslint/parser": "^5.14.0",
+    "@walletconnect/types": "^2.0.0-beta.23",
     "chai": "^4.3.6",
     "chai-ethers": "^0.0.1",
     "eslint": "^8.10.0",

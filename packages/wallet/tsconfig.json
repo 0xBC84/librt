@@ -4,16 +4,20 @@
     "importHelpers": true,
     "module": "commonjs",
     "outDir": "dist",
-    "rootDir": "src",
     "strict": true,
     "target": "esnext",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "baseUrl": "./src",
+    "baseUrl": "./",
     "paths": {
       "@services/*": ["services/*"]
     }
   },
-  "include": ["src/**/*"]
+  "include": [
+    "./index.ts",
+    "./commands",
+    "./services",
+    "./test"
+  ]
 }
