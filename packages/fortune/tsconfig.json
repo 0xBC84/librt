@@ -9,10 +9,6 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "baseUrl": "./src",
-    "paths": {
-      "@services/*": ["services/*"]
-    }
   },
   "include": [
     "hardhat.config.ts",

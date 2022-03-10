@@ -1,4 +1,5 @@
 import WalletConnectClient, { CLIENT_EVENTS } from "@walletconnect/client";
+import { PairingTypes } from "@walletconnect/types";
 import { Command } from "@oclif/core";
 import chain from "@librt/chain";
 
@@ -59,14 +60,21 @@ export default class Example extends Command {
       },
     });
 
-    client.on(CLIENT_EVENTS.pairing.proposal, async (proposal: any) => {
-      const { uri } = proposal.signal.params;
+    client.on(
+      CLIENT_EVENTS.pairing.proposal,
+      async (proposal: PairingTypes.Proposal) => {
+        // eslint-disable-next-line no-console
+        console.log(proposal);
+      }
+    );
 
-      // eslint-disable-next-line no-console
-      console.log(uri);
-
-      process.exit();
-    });
+    client.on(
+      CLIENT_EVENTS.pairing.created,
+      async (proposal: PairingTypes.Created) => {
+        // eslint-disable-next-line no-console
+        console.log("created", proposal);
+      }
+    );
 
     await session;
   }
