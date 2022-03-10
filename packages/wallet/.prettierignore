@@ -2,3 +2,4 @@ dist
 bin
 README.md
 oclif.manifest.json
+tsconfig.json

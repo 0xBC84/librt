@@ -8,3 +8,4 @@ artifacts
 deployments
 types
 hardhat.config.ts
+tsconfig.json

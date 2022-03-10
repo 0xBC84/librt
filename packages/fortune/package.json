@@ -10,6 +10,7 @@
     "@oclif/plugin-plugins": "^2.1.0",
     "@walletconnect/client": "^2.0.0-beta.23",
     "@walletconnect/ethereum-provider": "^2.0.0-beta.23",
+    "@walletconnect/types": "^2.0.0-beta.23",
     "bn.js": "^5.2.0",
     "chalk": "^4.1.2",
     "enquirer": "^2.3.6",
