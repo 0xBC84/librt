@@ -64,7 +64,8 @@ export default class Example extends Command {
 
       // eslint-disable-next-line no-console
       console.log(uri);
-      this.exit(0);
+
+      process.exit();
     });
 
     await session;
