@@ -1,6 +1,6 @@
 /dist
 /bin
-/src/contracts
+/contracts
 /cache
 /artifacts
 /deployments
