@@ -12,9 +12,16 @@ module.exports = {
   },
   extends: [
     "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended"
   ],
-  plugins: ["@typescript-eslint", "prettier"],
+  plugins: ["@typescript-eslint", "prettier", "react"],
+  settings: {
+    react: {
+      version: "detect"
+    }
+  },
   rules: {
     "no-debugger": 2,
     "no-console": [2, { allow: ["warn", "error"] }],
