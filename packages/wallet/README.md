@@ -27,9 +27,20 @@ USAGE
 # Commands
 
 <!-- commands -->
+* [`librt-wallet account:list`](#librt-wallet-accountlist)
 * [`librt-wallet balance`](#librt-wallet-balance)
 * [`librt-wallet help [COMMAND]`](#librt-wallet-help-command)
 * [`librt-wallet pair`](#librt-wallet-pair)
+
+## `librt-wallet account:list`
+
+```
+USAGE
+  $ librt-wallet account:list
+
+EXAMPLES
+  $ wallet account:list
+```
 
 ## `librt-wallet balance`
 

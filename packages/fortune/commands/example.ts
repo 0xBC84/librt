@@ -1,6 +1,7 @@
 import WalletConnectClient, { CLIENT_EVENTS } from "@walletconnect/client";
 import { PairingTypes } from "@walletconnect/types";
 import { Command } from "@oclif/core";
+import readline from "node:readline";
 
 export default class Example extends Command {
   static description = "Example.";
@@ -12,6 +13,8 @@ export default class Example extends Command {
   static args = [];
 
   async run(): Promise<void> {
+    readline.emitKeypressEvents(process.stdin);
+
     // @todo Get `projectId` from getConfig()
     const client = await WalletConnectClient.init({
       projectId: "004cbcf1b212d7e8786473c4cd8073cc",
@@ -64,6 +67,12 @@ export default class Example extends Command {
       );
 
       client.on(CLIENT_EVENTS.session.created, () => {
+        process.exit();
+      });
+
+      process.stdin.on("keypress", () => {
+        // eslint-disable-next-line no-console
+        console.log("press");
         process.exit();
       });
     });
