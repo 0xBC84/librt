@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Command } from "@oclif/core";
+import { Command, Flags } from "@oclif/core";
 import { Box, render, Text, useInput } from "ink";
 import { Done, Indicator, Info, Layout } from "@librt/ui";
+import Client, { CLIENT_EVENTS } from "@walletconnect/client";
+import WalletConnectClient from "@walletconnect/client";
+import { getWallet } from "@services/ethers";
+import { SessionTypes } from "@walletconnect/types";
 import EventEmitter from "node:events";
+
+// @todo Handle errors
 
 const accountList = [
   { address: "0x201...C33", tags: "Saving, Ethereum, Kovan" },
@@ -155,14 +161,22 @@ const SessionInfo = () => {
   );
 };
 
-const SegmentPairProposal = ({ event }: { event: any }) => {
+const SegmentPairProposal = ({
+  client,
+  uri,
+}: {
+  client?: Client | null;
+  uri: string;
+}) => {
+  // @todo Handle error.
   const doPairProposal = () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        event.emit("pairing.proposed");
+    if (!client) {
+      return new Promise((resolve) => {
         resolve(null);
-      }, 2000);
-    });
+      });
+    }
+
+    return client.pair({ uri });
   };
 
   return (
@@ -174,13 +188,12 @@ const SegmentPairProposal = ({ event }: { event: any }) => {
   );
 };
 
-const SegmentSessionProposal = ({ event }: { event: any }) => {
+const SegmentSessionProposal = ({ client }: { client: any }) => {
   const doSessionProposal = () => {
     return new Promise((resolve) => {
-      setTimeout(() => {
-        event.emit("session.proposed");
+      client.on(CLIENT_EVENTS.session.proposal, () => {
         resolve(null);
-      }, 2000);
+      });
     });
   };
 
@@ -193,13 +206,19 @@ const SegmentSessionProposal = ({ event }: { event: any }) => {
   );
 };
 
-const SegmentSessionReview = ({ event }: { event: any }) => {
+const SegmentSessionReview = ({
+  cli,
+  proposal,
+}: {
+  cli: EventEmitter;
+  proposal: SessionTypes.Proposal;
+}) => {
   const doSessionReviewed = () => {
-    event.emit("session.reviewed");
+    cli.emit(CLI_EVENT_SESSION_REVIEW_APPROVED, proposal);
   };
 
   const doSessionDenied = () => {
-    event.emit("session.denied");
+    cli.emit(CLI_EVENT_SESSION_REVIEW_DENIED, proposal);
   };
 
   return (
@@ -220,14 +239,24 @@ const SegmentSessionReview = ({ event }: { event: any }) => {
   );
 };
 
-const SegmentSessionApproval = ({ event }: { event: any }) => {
+const SegmentSessionApproval = ({
+  client,
+  proposal,
+}: {
+  client: Client;
+  proposal: SessionTypes.Proposal;
+}) => {
+  const wallet = getWallet();
+
+  // @todo Build protcol and network dynamically.
+  const response = {
+    state: {
+      accounts: ["eip155:42:" + wallet.address],
+    },
+  };
+
   const doSessionApproval = () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        event.emit("session.approved");
-        resolve(null);
-      }, 2000);
-    });
+    return client.approve({ proposal, response });
   };
 
   return (
@@ -260,65 +289,118 @@ const SegmentSessionDenied = () => {
   );
 };
 
-const event = new EventEmitter();
+const CLI_EVENT_SESSION_REVIEW_APPROVED = "session.review.approved";
+const CLI_EVENT_SESSION_REVIEW_DENIED = "session.review.denied";
+const cli = new EventEmitter();
 
-const PairConnect = () => {
-  const [components, setComponents] = useState<any>([
-    <SegmentPairProposal event={event} key="do-pair-proposal" />,
-  ]);
+const PairConnect = ({ uri }: { uri: string }) => {
+  const [client, setClient] = useState<Client | null>(null);
+  const [components, setComponents] = useState<any>();
 
   useEffect(() => {
-    event.on("pairing.proposed", () => {
-      setComponents((components: any) => [
-        ...components,
-        <SegmentSessionProposal event={event} key="do-session-proposal" />,
-      ]);
+    WalletConnectClient.init({
+      controller: true,
+      projectId: "004cbcf1b212d7e8786473c4cd8073cc",
+      relayUrl: "wss://relay.walletconnect.com",
+      metadata: {
+        name: "librt",
+        description: "librt",
+        url: "https://walletconnect.com/",
+        icons: [],
+      },
+    }).then((client) => {
+      setClient(client);
     });
   }, []);
 
   useEffect(() => {
-    event.on("session.proposed", () => {
-      setComponents((components: any) => [
-        ...components,
-        <SegmentSessionReview key="do-session-reviewed" event={event} />,
+    if (client) {
+      setComponents([
+        <SegmentPairProposal
+          key="do-pair-proposal"
+          client={client}
+          uri={uri}
+        />,
       ]);
-    });
-  }, []);
+    }
+  }, [client, uri]);
 
   useEffect(() => {
-    event.on("session.reviewed", () => {
-      setComponents((components: any) => [
-        ...components,
-        <SegmentSessionApproval key="do-session-approval" event={event} />,
-      ]);
-    });
-  }, []);
+    if (client) {
+      client.on(CLIENT_EVENTS.pairing.created, () => {
+        setComponents((components: any) => [
+          ...components,
+          <SegmentSessionProposal client={client} key="do-session-proposal" />,
+        ]);
+      });
+    }
+  }, [client]);
 
   useEffect(() => {
-    event.on("session.approved", () => {
-      setComponents((components: any) => [
-        ...components,
-        <SegmentSessionApproved key="session-approved" />,
-      ]);
-
-      setTimeout(() => {
-        process.exit();
-      }, 500);
-    });
-  }, []);
+    if (client) {
+      client.on(
+        CLIENT_EVENTS.session.proposal,
+        (proposal: SessionTypes.Proposal) => {
+          setComponents((components: any) => [
+            ...components,
+            <SegmentSessionReview
+              key="do-session-reviewed"
+              cli={cli}
+              proposal={proposal}
+            />,
+          ]);
+        }
+      );
+    }
+  }, [client]);
 
   useEffect(() => {
-    event.on("session.denied", () => {
-      setComponents((components: any) => [
-        ...components,
-        <SegmentSessionDenied key="session-denied" />,
-      ]);
+    if (client) {
+      cli.on(
+        CLI_EVENT_SESSION_REVIEW_APPROVED,
+        (proposal: SessionTypes.Proposal) => {
+          setComponents((components: any) => [
+            ...components,
+            <SegmentSessionApproval
+              key="do-session-approval"
+              client={client}
+              proposal={proposal}
+            />,
+          ]);
+        }
+      );
+    }
+  }, [client]);
 
-      setTimeout(() => {
-        process.exit();
-      }, 500);
-    });
-  }, []);
+  useEffect(() => {
+    if (client) {
+      client.on(CLIENT_EVENTS.session.created, () => {
+        setComponents((components: any) => [
+          ...components,
+          <SegmentSessionApproved key="session-approved" />,
+        ]);
+
+        setTimeout(() => {
+          process.exit();
+        }, 500);
+      });
+    }
+  }, [client]);
+
+  useEffect(() => {
+    if (client) {
+      client.on(CLI_EVENT_SESSION_REVIEW_DENIED, () => {
+        setComponents((components: any) => [
+          ...components,
+          <SegmentSessionDenied key="session-denied" />,
+        ]);
+
+        setTimeout(() => {
+          process.exit();
+        }, 500);
+      });
+    }
+  }, [client]);
 
   return <>{components}</>;
 };
@@ -328,16 +410,23 @@ export default class PairConnectCommand extends Command {
 
   static examples = [`$ wallet pair:connect`];
 
-  // @todo URI flag.
-  static flags = {};
+  static flags = {
+    uri: Flags.string({
+      char: "u",
+      description: "Connection URI",
+      required: true,
+    }),
+  };
 
   static args = [];
 
   async run(): Promise<void> {
+    const { flags } = await this.parse(PairConnectCommand);
+
     render(
       <>
         <Layout>
-          <PairConnect />
+          <PairConnect uri={flags.uri} />
         </Layout>
       </>
     );

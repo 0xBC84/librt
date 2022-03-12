@@ -61,8 +61,8 @@ export default class Example extends Command {
         async (proposal: PairingTypes.Created) => {
           this.log("pairing created");
           this.log(JSON.stringify(proposal, null, "  "));
-          const pairing = { topic: proposal.topic };
-          createSession(pairing);
+          // const pairing = { topic: proposal.topic };
+          // createSession(pairing);
         }
       );
 
