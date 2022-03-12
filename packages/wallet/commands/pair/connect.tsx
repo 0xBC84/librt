@@ -271,6 +271,7 @@ const PairConnect = () => {
         <SegmentSessionProposal event={event} key="do-session-proposal" />,
       ]);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -280,6 +281,7 @@ const PairConnect = () => {
         <SegmentSessionReview key="do-session-reviewed" event={event} />,
       ]);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -289,6 +291,7 @@ const PairConnect = () => {
         <SegmentSessionApproval key="do-session-approval" event={event} />,
       ]);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -302,6 +305,7 @@ const PairConnect = () => {
         process.exit();
       }, 500);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

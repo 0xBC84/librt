@@ -23,6 +23,7 @@ export const Indicator = ({
         setStep(limit);
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handler, interval.current]);
 
   useEffect(() => {
