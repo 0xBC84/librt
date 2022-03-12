@@ -96,62 +96,67 @@ const SessionInfo = () => {
 };
 
 const PairConnect = () => {
-  const [pair, setPair] = useState(false);
-  const [session, setSession] = useState(false);
-  const [approval, setApproval] = useState(false);
+  const [components, setComponents] = useState<any>([]);
 
   const event = new EventEmitter();
 
-  useEffect(() => {
-    setTimeout(() => {
-      event.emit("session.propose");
-    }, 2000);
-  }, [pair]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     event.emit("session.propose");
+  //   }, 4000);
+  // }, []);
 
-  useEffect(() => {
-    setTimeout(() => {
-      event.emit("session.approve");
-    }, 2000);
-  }, [session]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     event.emit("session.approve");
+  //   }, 2000);
+  // }, [session]);
 
-  const handlePairProposal = () => {
+  const doPairProposal = () => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        setPair(true);
+        event.emit("pairing.proposed");
         resolve(null);
       }, 2000);
     });
   };
 
-  const handleSessionProposal = () => {
+  const doSessionProposal = () => {
     return new Promise((resolve) => {
-      event.on("session.propose", () => {
-        setSession(true);
+      setTimeout(() => {
+        event.emit("session.proposed");
         resolve(null);
-      });
+      }, 2000);
     });
   };
 
-  const handleSessionApproval = () => {
+  const doSessionApproval = () => {
     return new Promise((resolve) => {
-      event.on("session.approve", () => {
-        setApproval(true);
+      setTimeout(() => {
+        event.emit("session.approved");
         resolve(null);
-      });
+      }, 2000);
     });
   };
 
-  return (
-    <>
-      <Indicator label="attempting to pair" handler={handlePairProposal} />
-      {pair && (
+  useEffect(() => {
+    event.on("pairing.proposed", () => {
+      setComponents((components: any) => [
+        ...components,
         <Indicator
+          key="do-session-proposal"
           label="waiting for session proposal"
-          handler={handleSessionProposal}
-        />
-      )}
-      {session && (
-        <>
+          handler={doSessionProposal}
+        />,
+      ]);
+    });
+  }, []);
+
+  useEffect(() => {
+    event.on("session.proposed", () => {
+      setComponents((components: any) => [
+        ...components,
+        <Box key="do-session-approval" flexDirection="column">
           <Text>
             <Info /> session proposed:
           </Text>
@@ -164,18 +169,35 @@ const PairConnect = () => {
           <Box>
             <Indicator
               label="waiting for session proposal"
-              handler={handleSessionApproval}
+              handler={doSessionApproval}
             />
           </Box>
-        </>
-      )}
-      {approval && (
-        <Box>
+        </Box>,
+      ]);
+    });
+  }, []);
+
+  useEffect(() => {
+    event.on("session.approved", () => {
+      setComponents((components: any) => [
+        ...components,
+        <Box key="session-approved">
           <Text>
             <Done /> session created
           </Text>
-        </Box>
-      )}
+        </Box>,
+      ]);
+    });
+  }, []);
+
+  return (
+    <>
+      <Indicator
+        label="attempting to pair"
+        handler={doPairProposal}
+        key="do-pair-proposal"
+      />
+      {components}
     </>
   );
 };
