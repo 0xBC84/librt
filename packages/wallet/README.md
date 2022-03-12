@@ -31,6 +31,7 @@ USAGE
 * [`librt-wallet balance`](#librt-wallet-balance)
 * [`librt-wallet help [COMMAND]`](#librt-wallet-help-command)
 * [`librt-wallet pair`](#librt-wallet-pair)
+* [`librt-wallet pair:connect`](#librt-wallet-pairconnect)
 
 ## `librt-wallet account:list`
 
@@ -93,5 +94,20 @@ DESCRIPTION
 
 EXAMPLES
   $ wallet pair
+```
+
+## `librt-wallet pair:connect`
+
+Create a pair connection.
+
+```
+USAGE
+  $ librt-wallet pair:connect
+
+DESCRIPTION
+  Create a pair connection.
+
+EXAMPLES
+  $ wallet pair:connect
 ```
 <!-- commandsstop -->

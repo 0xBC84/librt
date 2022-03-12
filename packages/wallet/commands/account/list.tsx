@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Command } from "@oclif/core";
 import { Box, render, Text, useInput } from "ink";
-import { Indicator, Info } from "@librt/ui";
+import { Indicator, Info, Layout } from "@librt/ui";
 
 type AccountListItem = {
   name: string;
@@ -117,9 +117,9 @@ export default class AccountList extends Command {
   async run(): Promise<void> {
     render(
       <>
-        <Box paddingX={2} paddingY={1} flexDirection="column">
+        <Layout>
           <AccountListTable />
-        </Box>
+        </Layout>
       </>
     );
   }
