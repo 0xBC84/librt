@@ -6,6 +6,7 @@
     "outDir": "dist",
     "strict": true,
     "target": "esnext",
+    "jsx": "react",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "moduleResolution": "node",

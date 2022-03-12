@@ -14,7 +14,9 @@
     "bn.js": "^5.2.0",
     "chalk": "^4.1.2",
     "enquirer": "^2.3.6",
-    "ethers": "^5.5.4"
+    "ethers": "^5.5.4",
+    "ink": "^3.2.0",
+    "react": "^17.0.2"
   },
   "dirname": "oex",
   "engines": {
