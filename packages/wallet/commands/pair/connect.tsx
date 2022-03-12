@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Command } from "@oclif/core";
 import { Box, render, Text } from "ink";
 import { Done, Indicator, Info, Layout } from "@librt/ui";
+import EventEmitter from "node:events";
 
 const SessionApproval = () => {
   return (
@@ -99,6 +100,20 @@ const PairConnect = () => {
   const [session, setSession] = useState(false);
   const [approval, setApproval] = useState(false);
 
+  const event = new EventEmitter();
+
+  useEffect(() => {
+    setTimeout(() => {
+      event.emit("session.propose");
+    }, 2000);
+  }, [pair]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      event.emit("session.approve");
+    }, 2000);
+  }, [session]);
+
   const handlePairProposal = () => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -110,19 +125,19 @@ const PairConnect = () => {
 
   const handleSessionProposal = () => {
     return new Promise((resolve) => {
-      setTimeout(() => {
+      event.on("session.propose", () => {
         setSession(true);
         resolve(null);
-      }, 2000);
+      });
     });
   };
 
   const handleSessionApproval = () => {
     return new Promise((resolve) => {
-      setTimeout(() => {
+      event.on("session.approve", () => {
         setApproval(true);
         resolve(null);
-      }, 2000);
+      });
     });
   };
 

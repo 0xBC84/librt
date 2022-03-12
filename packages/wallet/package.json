@@ -19,7 +19,6 @@
     "react": "^17.0.2",
     "@librt/ui": "*"
   },
-  "dirname": "oex",
   "engines": {
     "node": ">=16.0.0"
   },

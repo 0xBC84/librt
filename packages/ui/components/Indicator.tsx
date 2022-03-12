@@ -23,7 +23,7 @@ export const Indicator = ({
         setStep(limit);
       });
     }
-  }, [handler]);
+  }, [handler, interval.current]);
 
   useEffect(() => {
     interval.current = setInterval(() => {
