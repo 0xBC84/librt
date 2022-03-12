@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Command } from "@oclif/core";
-import { Box, render, Text } from "ink";
+import { Box, render, Text, useInput } from "ink";
 import { Done, Indicator, Info, Layout } from "@librt/ui";
 import EventEmitter from "node:events";
-import { handle } from "@oclif/core/lib/errors";
 
-const SessionApproval = () => {
+const SessionApproval = ({ onApproved }: { onApproved: any }) => {
+  useInput(() => {
+    onApproved();
+  });
+
   return (
     <>
       <Box flexDirection="column">
@@ -134,14 +137,9 @@ const SegmentSessionProposal = ({ event }: { event: any }) => {
   );
 };
 
-const SegmentSessionApproval = ({ event }: { event: any }) => {
-  const doSessionApproval = () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        event.emit("session.approved");
-        resolve(null);
-      }, 2000);
-    });
+const SegmentSessionReview = ({ event }: { event: any }) => {
+  const doSessionReviewed = () => {
+    event.emit("session.reviewed");
   };
 
   return (
@@ -153,15 +151,29 @@ const SegmentSessionApproval = ({ event }: { event: any }) => {
         <SessionInfo />
       </Box>
       <Box marginTop={1} marginBottom={1}>
-        <SessionApproval />
-      </Box>
-      <Box>
-        <Indicator
-          label="waiting for session proposal"
-          handler={doSessionApproval}
-        />
+        <SessionApproval onApproved={doSessionReviewed} />
       </Box>
     </>
+  );
+};
+
+const SegmentSessionApproval = ({ event }: { event: any }) => {
+  const doSessionApproval = () => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        event.emit("session.approved");
+        resolve(null);
+      }, 2000);
+    });
+  };
+
+  return (
+    <Box>
+      <Indicator
+        label="waiting for session approval"
+        handler={doSessionApproval}
+      />
+    </Box>
   );
 };
 
@@ -193,6 +205,15 @@ const PairConnect = () => {
 
   useEffect(() => {
     event.on("session.proposed", () => {
+      setComponents((components: any) => [
+        ...components,
+        <SegmentSessionReview key="do-session-reviewed" event={event} />,
+      ]);
+    });
+  }, []);
+
+  useEffect(() => {
+    event.on("session.reviewed", () => {
       setComponents((components: any) => [
         ...components,
         <SegmentSessionApproval key="do-session-approval" event={event} />,
