@@ -4,28 +4,81 @@ import { Box, render, Text, useInput } from "ink";
 import { Done, Indicator, Info, Layout } from "@librt/ui";
 import EventEmitter from "node:events";
 
-const SessionApproval = ({ onApproved }: { onApproved: any }) => {
-  useInput(() => {
-    onApproved();
+const accountList = [
+  { address: "0x201...C33", tags: "Saving, Ethereum, Kovan" },
+  { address: "0xBC1...A32", tags: "Saving, Ethereum, Kovan" },
+];
+
+const SessionApproval = ({
+  onApproved,
+  onDenied,
+}: {
+  onApproved: any;
+  onDenied: any;
+}) => {
+  const [selected, setSelected] = useState(0);
+  const [approved, setApproved] = useState<number[]>([]);
+
+  const isSelected = (i: number) => {
+    return i === selected;
+  };
+
+  const isApproved = (i: number) => {
+    return approved.includes(i);
+  };
+
+  const toggleApproved = (i: number) => {
+    if (isApproved(i)) {
+      setApproved((approved) => {
+        const _approved = [...approved];
+        _approved.splice(i, 1);
+        return _approved;
+      });
+    } else {
+      setApproved((approved) => [...approved, i]);
+    }
+  };
+
+  useInput((input, key) => {
+    if (input === " ") {
+      toggleApproved(selected);
+    }
+
+    if (key.downArrow) {
+      if (selected >= accountList.length - 1) return;
+      setSelected((selected) => selected + 1);
+    }
+
+    if (key.upArrow) {
+      if (selected === 0) return;
+      setSelected((selected) => selected - 1);
+    }
+
+    if (key.return) {
+      if (approved.length > 0) onApproved();
+      else onDenied();
+    }
+
+    if (key.escape) {
+      onDenied();
+    }
   });
 
   return (
     <>
       <Box flexDirection="column">
-        <Box flexDirection="row">
-          <Box minWidth={2}>
-            <Text color="yellowBright">•</Text>
+        {accountList.map((account, i) => (
+          <Box flexDirection="row" key={account.address}>
+            <Box minWidth={2}>
+              {isSelected(i) && <Text color="yellowBright">•</Text>}
+            </Box>
+            <Text color="yellowBright">{isApproved(i) ? "[-]" : "[ ]"}</Text>
+            <Text> </Text>
+            <Text color="yellowBright">{account.address}</Text>
+            <Text> </Text>
+            <Text color="grey">{account.tags}</Text>
           </Box>
-          <Text color="yellowBright">[-] </Text>
-          <Text color="yellowBright">0x201...C33 </Text>
-          <Text color="grey">Saving, Ethereum, Kovan</Text>
-        </Box>
-        <Box flexDirection="row">
-          <Box minWidth={2} />
-          <Text color="yellow">[ ] </Text>
-          <Text color="yellow">0xBC1...A32 </Text>
-          <Text color="grey">Saving, Ethereum, Kovan</Text>
-        </Box>
+        ))}
         <Box marginTop={1} />
         <Box flexDirection="row">
           <Text>
@@ -142,6 +195,10 @@ const SegmentSessionReview = ({ event }: { event: any }) => {
     event.emit("session.reviewed");
   };
 
+  const doSessionDenied = () => {
+    event.emit("session.denied");
+  };
+
   return (
     <>
       <Text>
@@ -151,7 +208,10 @@ const SegmentSessionReview = ({ event }: { event: any }) => {
         <SessionInfo />
       </Box>
       <Box marginTop={1} marginBottom={1}>
-        <SessionApproval onApproved={doSessionReviewed} />
+        <SessionApproval
+          onApproved={doSessionReviewed}
+          onDenied={doSessionDenied}
+        />
       </Box>
     </>
   );
@@ -182,6 +242,16 @@ const SegmentSessionApproved = () => {
     <Box>
       <Text>
         <Done /> session created
+      </Text>
+    </Box>
+  );
+};
+
+const SegmentSessionDenied = () => {
+  return (
+    <Box>
+      <Text>
+        <Info /> session denied
       </Text>
     </Box>
   );
@@ -227,6 +297,23 @@ const PairConnect = () => {
         ...components,
         <SegmentSessionApproved key="session-approved" />,
       ]);
+
+      setTimeout(() => {
+        process.exit();
+      }, 500);
+    });
+  }, []);
+
+  useEffect(() => {
+    event.on("session.denied", () => {
+      setComponents((components: any) => [
+        ...components,
+        <SegmentSessionDenied key="session-denied" />,
+      ]);
+
+      setTimeout(() => {
+        process.exit();
+      }, 500);
     });
   }, []);
 
