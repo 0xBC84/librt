@@ -16,6 +16,7 @@ const SessionApproval = ({
   onApproved: any;
   onDenied: any;
 }) => {
+  let isComplete = false;
   const [selected, setSelected] = useState(0);
   const [approved, setApproved] = useState<number[]>([]);
 
@@ -54,12 +55,14 @@ const SessionApproval = ({
       setSelected((selected) => selected - 1);
     }
 
-    if (key.return) {
+    if (key.return && !isComplete) {
+      isComplete = true;
       if (approved.length > 0) onApproved();
       else onDenied();
     }
 
-    if (key.escape) {
+    if (key.escape && !isComplete) {
+      isComplete = true;
       onDenied();
     }
   });
@@ -184,7 +187,7 @@ const SegmentSessionProposal = ({ event }: { event: any }) => {
   return (
     <Indicator
       key="do-session-proposal"
-      label="waiting for session proposal"
+      label="waiting for session proposals"
       handler={doSessionProposal}
     />
   );
@@ -257,9 +260,9 @@ const SegmentSessionDenied = () => {
   );
 };
 
-const PairConnect = () => {
-  const event = new EventEmitter();
+const event = new EventEmitter();
 
+const PairConnect = () => {
   const [components, setComponents] = useState<any>([
     <SegmentPairProposal event={event} key="do-pair-proposal" />,
   ]);
@@ -271,7 +274,6 @@ const PairConnect = () => {
         <SegmentSessionProposal event={event} key="do-session-proposal" />,
       ]);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -281,7 +283,6 @@ const PairConnect = () => {
         <SegmentSessionReview key="do-session-reviewed" event={event} />,
       ]);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -291,7 +292,6 @@ const PairConnect = () => {
         <SegmentSessionApproval key="do-session-approval" event={event} />,
       ]);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -305,7 +305,6 @@ const PairConnect = () => {
         process.exit();
       }, 500);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
