@@ -3,6 +3,7 @@ import { Command } from "@oclif/core";
 import { Box, render, Text } from "ink";
 import { Done, Indicator, Info, Layout } from "@librt/ui";
 import EventEmitter from "node:events";
+import { handle } from "@oclif/core/lib/errors";
 
 const SessionApproval = () => {
   return (
@@ -95,6 +96,55 @@ const SessionInfo = () => {
   );
 };
 
+const SegmentPairProposal = ({ handler }: { handler: any }) => {
+  return (
+    <Indicator
+      label="attempting to pair"
+      handler={handler}
+      key="do-pair-proposal"
+    />
+  );
+};
+
+const SegmentSessionProposal = ({ handler }: { handler: any }) => {
+  return (
+    <Indicator
+      key="do-session-proposal"
+      label="waiting for session proposal"
+      handler={handler}
+    />
+  );
+};
+
+const SegmentSessionApproval = ({ handler }: { handler: any }) => {
+  return (
+    <>
+      <Text>
+        <Info /> session proposed:
+      </Text>
+      <Box marginTop={1}>
+        <SessionInfo />
+      </Box>
+      <Box marginTop={1} marginBottom={1}>
+        <SessionApproval />
+      </Box>
+      <Box>
+        <Indicator label="waiting for session proposal" handler={handler} />
+      </Box>
+    </>
+  );
+};
+
+const SegmentSessionApproved = () => {
+  return (
+    <Box>
+      <Text>
+        <Done /> session created
+      </Text>
+    </Box>
+  );
+};
+
 const PairConnect = () => {
   const [components, setComponents] = useState<any>([]);
 
@@ -143,9 +193,8 @@ const PairConnect = () => {
     event.on("pairing.proposed", () => {
       setComponents((components: any) => [
         ...components,
-        <Indicator
+        <SegmentSessionProposal
           key="do-session-proposal"
-          label="waiting for session proposal"
           handler={doSessionProposal}
         />,
       ]);
@@ -156,23 +205,10 @@ const PairConnect = () => {
     event.on("session.proposed", () => {
       setComponents((components: any) => [
         ...components,
-        <Box key="do-session-approval" flexDirection="column">
-          <Text>
-            <Info /> session proposed:
-          </Text>
-          <Box marginTop={1}>
-            <SessionInfo />
-          </Box>
-          <Box marginTop={1} marginBottom={1}>
-            <SessionApproval />
-          </Box>
-          <Box>
-            <Indicator
-              label="waiting for session proposal"
-              handler={doSessionApproval}
-            />
-          </Box>
-        </Box>,
+        <SegmentSessionApproval
+          key="do-session-approval"
+          handler={doSessionApproval}
+        />,
       ]);
     });
   }, []);
@@ -181,22 +217,14 @@ const PairConnect = () => {
     event.on("session.approved", () => {
       setComponents((components: any) => [
         ...components,
-        <Box key="session-approved">
-          <Text>
-            <Done /> session created
-          </Text>
-        </Box>,
+        <SegmentSessionApproved key="session-approved" />,
       ]);
     });
   }, []);
 
   return (
     <>
-      <Indicator
-        label="attempting to pair"
-        handler={doPairProposal}
-        key="do-pair-proposal"
-      />
+      <SegmentPairProposal handler={doPairProposal} key="do-pair-proposal" />
       {components}
     </>
   );
