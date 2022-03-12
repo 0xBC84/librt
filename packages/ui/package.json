@@ -1,0 +1,21 @@
+{
+  "name": "@librt/ui",
+  "version": "0.0.1",
+  "dependencies": {
+    "ink": "^3.2.0",
+    "react": "^17.0.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "shx rm -rf dist && tsc -b && tsc-alias",
+    "dev": "tsc -w & tsc-alias -w",
+    "lint": "yarn lint:prettier && yarn lint:eslint",
+    "lint:prettier:write": "prettier --write .",
+    "lint:prettier": "prettier --check .",
+    "lint:eslint": "eslint ."
+  }
+}
