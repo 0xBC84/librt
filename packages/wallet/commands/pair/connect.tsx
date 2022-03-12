@@ -96,27 +96,54 @@ const SessionInfo = () => {
   );
 };
 
-const SegmentPairProposal = ({ handler }: { handler: any }) => {
+const SegmentPairProposal = ({ event }: { event: any }) => {
+  const doPairProposal = () => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        event.emit("pairing.proposed");
+        resolve(null);
+      }, 2000);
+    });
+  };
+
   return (
     <Indicator
       label="attempting to pair"
-      handler={handler}
+      handler={doPairProposal}
       key="do-pair-proposal"
     />
   );
 };
 
-const SegmentSessionProposal = ({ handler }: { handler: any }) => {
+const SegmentSessionProposal = ({ event }: { event: any }) => {
+  const doSessionProposal = () => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        event.emit("session.proposed");
+        resolve(null);
+      }, 2000);
+    });
+  };
+
   return (
     <Indicator
       key="do-session-proposal"
       label="waiting for session proposal"
-      handler={handler}
+      handler={doSessionProposal}
     />
   );
 };
 
-const SegmentSessionApproval = ({ handler }: { handler: any }) => {
+const SegmentSessionApproval = ({ event }: { event: any }) => {
+  const doSessionApproval = () => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        event.emit("session.approved");
+        resolve(null);
+      }, 2000);
+    });
+  };
+
   return (
     <>
       <Text>
@@ -129,7 +156,10 @@ const SegmentSessionApproval = ({ handler }: { handler: any }) => {
         <SessionApproval />
       </Box>
       <Box>
-        <Indicator label="waiting for session proposal" handler={handler} />
+        <Indicator
+          label="waiting for session proposal"
+          handler={doSessionApproval}
+        />
       </Box>
     </>
   );
@@ -146,57 +176,17 @@ const SegmentSessionApproved = () => {
 };
 
 const PairConnect = () => {
-  const [components, setComponents] = useState<any>([]);
-
   const event = new EventEmitter();
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     event.emit("session.propose");
-  //   }, 4000);
-  // }, []);
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     event.emit("session.approve");
-  //   }, 2000);
-  // }, [session]);
-
-  const doPairProposal = () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        event.emit("pairing.proposed");
-        resolve(null);
-      }, 2000);
-    });
-  };
-
-  const doSessionProposal = () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        event.emit("session.proposed");
-        resolve(null);
-      }, 2000);
-    });
-  };
-
-  const doSessionApproval = () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        event.emit("session.approved");
-        resolve(null);
-      }, 2000);
-    });
-  };
+  const [components, setComponents] = useState<any>([
+    <SegmentPairProposal event={event} key="do-pair-proposal" />,
+  ]);
 
   useEffect(() => {
     event.on("pairing.proposed", () => {
       setComponents((components: any) => [
         ...components,
-        <SegmentSessionProposal
-          key="do-session-proposal"
-          handler={doSessionProposal}
-        />,
+        <SegmentSessionProposal event={event} key="do-session-proposal" />,
       ]);
     });
   }, []);
@@ -205,10 +195,7 @@ const PairConnect = () => {
     event.on("session.proposed", () => {
       setComponents((components: any) => [
         ...components,
-        <SegmentSessionApproval
-          key="do-session-approval"
-          handler={doSessionApproval}
-        />,
+        <SegmentSessionApproval key="do-session-approval" event={event} />,
       ]);
     });
   }, []);
@@ -222,12 +209,7 @@ const PairConnect = () => {
     });
   }, []);
 
-  return (
-    <>
-      <SegmentPairProposal handler={doPairProposal} key="do-pair-proposal" />
-      {components}
-    </>
-  );
+  return <>{components}</>;
 };
 
 export default class PairConnectCommand extends Command {
