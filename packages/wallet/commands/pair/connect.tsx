@@ -7,13 +7,11 @@ import WalletConnectClient from "@walletconnect/client";
 import { getWallet } from "@services/ethers";
 import { SessionTypes } from "@walletconnect/types";
 import EventEmitter from "node:events";
+import { truncateAddress } from "@services/common";
 
+// @todo Implement multiple addresses
+// @todo Tags
 // @todo Handle errors
-
-const accountList = [
-  { address: "0x201...C33", tags: "Saving, Ethereum, Kovan" },
-  { address: "0xBC1...A32", tags: "Saving, Ethereum, Kovan" },
-];
 
 const SessionApproval = ({
   onApproved,
@@ -23,8 +21,10 @@ const SessionApproval = ({
   onDenied: any;
 }) => {
   let isComplete = false;
+  const wallet = getWallet();
   const [selected, setSelected] = useState(0);
   const [approved, setApproved] = useState<number[]>([]);
+  const accountList = [{ address: wallet.address, tags: "" }];
 
   const isSelected = (i: number) => {
     return i === selected;
@@ -83,7 +83,7 @@ const SessionApproval = ({
             </Box>
             <Text color="yellowBright">{isApproved(i) ? "[-]" : "[ ]"}</Text>
             <Text> </Text>
-            <Text color="yellowBright">{account.address}</Text>
+            <Text color="yellowBright">{truncateAddress(account.address)}</Text>
             <Text> </Text>
             <Text color="grey">{account.tags}</Text>
           </Box>
@@ -408,7 +408,7 @@ const PairConnect = ({ uri }: { uri: string }) => {
 export default class PairConnectCommand extends Command {
   static description = "Create a pair connection.";
 
-  static examples = [`$ wallet pair:connect`];
+  static examples = [`$ wallet pair:connect --uri=<uri>`];
 
   static flags = {
     uri: Flags.string({

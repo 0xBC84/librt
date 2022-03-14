@@ -102,7 +102,10 @@ Create a pair connection.
 
 ```
 USAGE
-  $ librt-wallet pair:connect
+  $ librt-wallet pair:connect -u <value>
+
+FLAGS
+  -u, --uri=<value>  (required) Connection URI
 
 DESCRIPTION
   Create a pair connection.

@@ -9,7 +9,7 @@
     "node": ">=16.0.0"
   },
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
   "scripts": {
     "build": "shx rm -rf dist && tsc -b && tsc-alias",
     "dev": "tsc -w & tsc-alias -w",
