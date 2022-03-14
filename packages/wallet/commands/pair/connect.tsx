@@ -218,6 +218,7 @@ const SegmentSessionReview = ({
   };
 
   const doSessionDenied = () => {
+    console.log("emit denied");
     cli.emit(CLI_EVENT_SESSION_REVIEW_DENIED, proposal);
   };
 
@@ -389,7 +390,7 @@ const PairConnect = ({ uri }: { uri: string }) => {
 
   useEffect(() => {
     if (client) {
-      client.on(CLI_EVENT_SESSION_REVIEW_DENIED, () => {
+      cli.on(CLI_EVENT_SESSION_REVIEW_DENIED, () => {
         setComponents((components: any) => [
           ...components,
           <SegmentSessionDenied key="session-denied" />,
