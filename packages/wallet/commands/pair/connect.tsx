@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Command, Flags } from "@oclif/core";
 import { Box, render, Text, useInput } from "ink";
-import { Done, Indicator, Info, Layout } from "@librt/ui";
+import { Done, Error, Indicator, Info, Layout } from "@librt/ui";
 import WalletConnectClient, { CLIENT_EVENTS } from "@walletconnect/client";
 import { getWallet } from "@services/ethers";
 import { SessionTypes } from "@walletconnect/types";
@@ -11,6 +11,14 @@ import { truncateAddress } from "@services/common";
 // @todo Implement multiple addresses
 // @todo Tags
 // @todo Handle errors
+// @todo Add listen timeout
+// @todo Implement proposal accept view
+
+const CLI_EVENT_SESSION_REVIEW_APPROVED = "session.review.approved";
+const CLI_EVENT_SESSION_REVIEW_DENIED = "session.review.denied";
+const CLI_EVENT_EXCEPTION = "exception";
+
+const cli = new EventEmitter();
 
 const SessionApproval = ({
   onApproved,
@@ -167,15 +175,17 @@ const SegmentPairProposal = ({
   wc?: WalletConnectClient | null;
   uri: string;
 }) => {
-  // @todo Handle error.
   const doPairProposal = () => {
     if (!wc) {
       return new Promise((resolve) => {
+        cli.emit(CLI_EVENT_EXCEPTION);
         resolve(null);
       });
     }
 
-    return wc.pair({ uri });
+    return wc.pair({ uri }).catch((error) => {
+      cli.emit(CLI_EVENT_EXCEPTION, error.message);
+    });
   };
 
   return (
@@ -247,7 +257,8 @@ const SegmentSessionApproval = ({
 }) => {
   const wallet = getWallet();
 
-  // @todo Build protcol and network dynamically.
+  // @todo Build protocol and network dynamically.
+  // @todo Get chosen options.
   const response = {
     state: {
       accounts: ["eip155:42:" + wallet.address],
@@ -288,9 +299,19 @@ const SegmentSessionDenied = () => {
   );
 };
 
-const CLI_EVENT_SESSION_REVIEW_APPROVED = "session.review.approved";
-const CLI_EVENT_SESSION_REVIEW_DENIED = "session.review.denied";
-const cli = new EventEmitter();
+const SegmentSessionException = ({
+  message = "something went wrong.",
+}: {
+  message?: string;
+}) => {
+  return (
+    <Box>
+      <Text>
+        <Error /> error: {message}
+      </Text>
+    </Box>
+  );
+};
 
 const PairConnect = ({ uri }: { uri: string }) => {
   const [wc, setClient] = useState<WalletConnectClient | null>(null);
@@ -383,19 +404,30 @@ const PairConnect = ({ uri }: { uri: string }) => {
   }, [wc]);
 
   useEffect(() => {
-    if (wc) {
-      cli.on(CLI_EVENT_SESSION_REVIEW_DENIED, () => {
-        setComponents((components: React.ReactNode[]) => [
-          ...components,
-          <SegmentSessionDenied key="session-denied" />,
-        ]);
+    cli.on(CLI_EVENT_SESSION_REVIEW_DENIED, () => {
+      setComponents((components: React.ReactNode[]) => [
+        ...components,
+        <SegmentSessionDenied key="session-denied" />,
+      ]);
 
-        setTimeout(() => {
-          process.exit();
-        }, 500);
-      });
-    }
-  }, [wc]);
+      setTimeout(() => {
+        process.exit();
+      }, 500);
+    });
+  }, []);
+
+  useEffect(() => {
+    cli.on(CLI_EVENT_EXCEPTION, (message: string) => {
+      setComponents((components: React.ReactNode[]) => [
+        ...components,
+        <SegmentSessionException key="exception" message={message} />,
+      ]);
+
+      setTimeout(() => {
+        process.exit();
+      }, 500);
+    });
+  }, []);
 
   return <>{components}</>;
 };
