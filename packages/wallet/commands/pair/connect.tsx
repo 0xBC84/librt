@@ -115,8 +115,13 @@ const SessionApproval = ({
   );
 };
 
-const SessionInfo = () => {
+// @todo Chain display name.
+const SessionInfo = ({ proposal }: { proposal: SessionTypes.Proposal }) => {
   const labelWidth = 15;
+  const metadata = proposal.proposer.metadata;
+
+  const chains = proposal.permissions.blockchain.chains || ["NA"];
+  const permissions = Object.values(proposal.permissions.jsonrpc.methods) || [];
 
   return (
     <Box flexDirection="column">
@@ -125,7 +130,7 @@ const SessionInfo = () => {
           <Text color="grey">name:</Text>
         </Box>
         <Box>
-          <Text>Oasis</Text>
+          <Text>{metadata.name}</Text>
         </Box>
       </Box>
       <Box flexDirection="row">
@@ -133,15 +138,17 @@ const SessionInfo = () => {
           <Text color="grey">URL:</Text>
         </Box>
         <Box>
-          <Text>https://oasis.app</Text>
+          <Text>{metadata.url}</Text>
         </Box>
       </Box>
       <Box flexDirection="row">
         <Box minWidth={labelWidth}>
           <Text color="grey">blockchain:</Text>
         </Box>
-        <Box>
-          <Text>Ethereum</Text>
+        <Box flexDirection="column">
+          {chains.map((chain) => (
+            <Text key={chain}>{chain}</Text>
+          ))}
         </Box>
       </Box>
       <Box flexDirection="row">
@@ -149,7 +156,7 @@ const SessionInfo = () => {
           <Text color="grey">relay:</Text>
         </Box>
         <Box>
-          <Text>Waku</Text>
+          <Text>{proposal.relay.protocol}</Text>
         </Box>
       </Box>
       <Box flexDirection="row">
@@ -157,11 +164,9 @@ const SessionInfo = () => {
           <Text color="grey">methods:</Text>
         </Box>
         <Box flexDirection="column">
-          <Text>eth_sendTransaction</Text>
-          <Text>eth_signTransaction</Text>
-          <Text>eth_sign</Text>
-          <Text>personal_sign</Text>
-          <Text>eth_signTypedData</Text>
+          {permissions.map((permission) => (
+            <Text key={permission}>{permission}</Text>
+          ))}
         </Box>
       </Box>
     </Box>
@@ -236,7 +241,7 @@ const SegmentSessionReview = ({
         <Info /> session proposed:
       </Text>
       <Box marginTop={1}>
-        <SessionInfo />
+        <SessionInfo proposal={proposal} />
       </Box>
       <Box marginTop={1} marginBottom={1}>
         <SessionApproval

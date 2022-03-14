@@ -32,6 +32,7 @@ module.exports = {
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "@typescript-eslint/no-unused-vars": ["error"],
     "@typescript-eslint/ban-types": 0,
-    "node/no-missing-import": 0
+    "node/no-missing-import": 0,
+    "unicorn/no-array-reduce": 0
   }
 }
