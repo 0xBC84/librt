@@ -294,7 +294,7 @@ const cli = new EventEmitter();
 
 const PairConnect = ({ uri }: { uri: string }) => {
   const [wc, setClient] = useState<WalletConnectClient | null>(null);
-  const [components, setComponents] = useState<any>();
+  const [components, setComponents] = useState<React.ReactNode[]>([]);
 
   useEffect(() => {
     WalletConnectClient.init({
@@ -323,7 +323,7 @@ const PairConnect = ({ uri }: { uri: string }) => {
   useEffect(() => {
     if (wc) {
       wc.on(CLIENT_EVENTS.pairing.created, () => {
-        setComponents((components: any) => [
+        setComponents((components: React.ReactNode[]) => [
           ...components,
           <SegmentSessionProposal wc={wc} key="do-session-proposal" />,
         ]);
@@ -336,7 +336,7 @@ const PairConnect = ({ uri }: { uri: string }) => {
       wc.on(
         CLIENT_EVENTS.session.proposal,
         (proposal: SessionTypes.Proposal) => {
-          setComponents((components: any) => [
+          setComponents((components: React.ReactNode[]) => [
             ...components,
             <SegmentSessionReview
               key="do-session-reviewed"
@@ -354,7 +354,7 @@ const PairConnect = ({ uri }: { uri: string }) => {
       cli.on(
         CLI_EVENT_SESSION_REVIEW_APPROVED,
         (proposal: SessionTypes.Proposal) => {
-          setComponents((components: any) => [
+          setComponents((components: React.ReactNode[]) => [
             ...components,
             <SegmentSessionApproval
               key="do-session-approval"
@@ -370,7 +370,7 @@ const PairConnect = ({ uri }: { uri: string }) => {
   useEffect(() => {
     if (wc) {
       wc.on(CLIENT_EVENTS.session.created, () => {
-        setComponents((components: any) => [
+        setComponents((components: React.ReactNode[]) => [
           ...components,
           <SegmentSessionApproved key="session-approved" />,
         ]);
@@ -385,7 +385,7 @@ const PairConnect = ({ uri }: { uri: string }) => {
   useEffect(() => {
     if (wc) {
       cli.on(CLI_EVENT_SESSION_REVIEW_DENIED, () => {
-        setComponents((components: any) => [
+        setComponents((components: React.ReactNode[]) => [
           ...components,
           <SegmentSessionDenied key="session-denied" />,
         ]);
