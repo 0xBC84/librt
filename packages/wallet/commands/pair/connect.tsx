@@ -16,8 +16,8 @@ const SessionApproval = ({
   onApproved,
   onDenied,
 }: {
-  onApproved: any;
-  onDenied: any;
+  onApproved: () => void;
+  onDenied: () => void;
 }) => {
   let isComplete = false;
   const wallet = getWallet();
