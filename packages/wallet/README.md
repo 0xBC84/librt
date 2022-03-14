@@ -111,6 +111,6 @@ DESCRIPTION
   Create a pair connection.
 
 EXAMPLES
-  $ wallet pair:connect
+  $ wallet pair:connect --uri=<uri>
 ```
 <!-- commandsstop -->
