@@ -3,7 +3,7 @@ import { Command, Flags } from "@oclif/core";
 import { Box, render, Text, useInput } from "ink";
 import { Done, Error, Indicator, Info, Layout } from "@librt/ui";
 import WalletConnectClient, { CLIENT_EVENTS } from "@walletconnect/client";
-import { getChainByWCId, getWallet } from "@services/blockchain";
+import { getChainByWCId, getWallet, getWallets } from "@services/blockchain";
 import { SessionTypes } from "@walletconnect/types";
 import EventEmitter from "node:events";
 import { truncateAddress } from "@services/common";
@@ -30,10 +30,17 @@ const SessionApproval = ({
   onDenied: () => void;
 }) => {
   let isComplete = false;
-  const wallet = getWallet();
+  const wallets = getWallets();
   const [selected, setSelected] = useState(0);
   const [approved, setApproved] = useState<number[]>([]);
-  const accountList = [{ address: wallet.address, tags: "" }];
+
+  // @todo Filter accounts that aren't supported
+  const accountList = wallets.map((wallet) => ({
+    address: wallet.address,
+    tags: [wallet.accountName, wallet.chain?.chain, wallet.chain?.name]
+      .filter(Boolean)
+      .join(", "),
+  }));
 
   const isSelected = (i: number) => {
     return i === selected;

@@ -28,9 +28,7 @@ USAGE
 
 <!-- commands -->
 * [`librt-wallet account:list`](#librt-wallet-accountlist)
-* [`librt-wallet balance`](#librt-wallet-balance)
 * [`librt-wallet help [COMMAND]`](#librt-wallet-help-command)
-* [`librt-wallet pair`](#librt-wallet-pair)
 * [`librt-wallet pair:connect`](#librt-wallet-pairconnect)
 
 ## `librt-wallet account:list`
@@ -41,21 +39,6 @@ USAGE
 
 EXAMPLES
   $ wallet account:list
-```
-
-## `librt-wallet balance`
-
-Provides balance operations.
-
-```
-USAGE
-  $ librt-wallet balance
-
-DESCRIPTION
-  Provides balance operations.
-
-EXAMPLES
-  $ wallet balance
 ```
 
 ## `librt-wallet help [COMMAND]`
@@ -77,24 +60,6 @@ DESCRIPTION
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.12/src/commands/help.ts)_
-
-## `librt-wallet pair`
-
-Create connection pair.
-
-```
-USAGE
-  $ librt-wallet pair -u <value>
-
-FLAGS
-  -u, --uri=<value>  (required) Connection URI
-
-DESCRIPTION
-  Create connection pair.
-
-EXAMPLES
-  $ wallet pair
-```
 
 ## `librt-wallet pair:connect`
 
