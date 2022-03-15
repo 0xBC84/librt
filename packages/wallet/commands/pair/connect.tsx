@@ -7,6 +7,7 @@ import { getChainByWCId, getWallet } from "@services/blockchain";
 import { SessionTypes } from "@walletconnect/types";
 import EventEmitter from "node:events";
 import { truncateAddress } from "@services/common";
+import { Chain } from "@librt/chain";
 
 // @todo CTRL-C doesn't exit
 // @todo Implement multiple addresses
@@ -120,17 +121,17 @@ const SessionInfo = ({ proposal }: { proposal: SessionTypes.Proposal }) => {
   const labelWidth = 15;
   const metadata = proposal.proposer.metadata;
 
-  const chains = [];
+  const chains: Chain[] = [];
+  const chainsUnsupported: string[] = [];
   const permissions = Object.values(proposal.permissions.jsonrpc.methods) || [];
 
-  try {
-    for (const chain of proposal.permissions.blockchain.chains) {
+  for (const chain of proposal.permissions.blockchain.chains) {
+    try {
       const chainData = getChainByWCId(chain);
       if (chainData) chains.push(chainData);
+    } catch {
+      chainsUnsupported.push(chain);
     }
-  } catch (error: any) {
-    cli.emit(CLI_EVENT_EXCEPTION, error.message);
-    return null;
   }
 
   return (
@@ -160,6 +161,9 @@ const SessionInfo = ({ proposal }: { proposal: SessionTypes.Proposal }) => {
             <Text key={chain.chainId}>
               {chain.name} {chain?.chain ? `(${chain.chain})` : null}
             </Text>
+          ))}
+          {chainsUnsupported.map((chain) => (
+            <Text key={chain}>{chain} (unsupported)</Text>
           ))}
         </Box>
       </Box>
@@ -324,7 +328,7 @@ const SegmentSessionException = ({
   return (
     <Box>
       <Text>
-        <Error /> error: {message}
+        <Error /> {message}
       </Text>
     </Box>
   );
