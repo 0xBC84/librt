@@ -1,7 +1,7 @@
 import { getConfig } from "@services/config";
-import { ethers } from "ethers";
 import { isValidChainId } from "@walletconnect/utils";
 import { getSupportedChainById } from "@librt/chain";
+import { ethers } from "ethers";
 
 export const getWallet = () => {
   const { mneomic, node, network } = getConfig();

@@ -1,6 +1,6 @@
 import { Command } from "@oclif/core";
 import { getWriter } from "@services/output";
-import { getWallet } from "@services/ethers";
+import { getWallet } from "@services/blockchain";
 import { ethers } from "ethers";
 
 export default class Balance extends Command {

@@ -3,7 +3,7 @@ import { Command, Flags } from "@oclif/core";
 import { Box, render, Text, useInput } from "ink";
 import { Done, Error, Indicator, Info, Layout } from "@librt/ui";
 import WalletConnectClient, { CLIENT_EVENTS } from "@walletconnect/client";
-import { getChainByWCId, getWallet } from "@services/ethers";
+import { getChainByWCId, getWallet } from "@services/blockchain";
 import { SessionTypes } from "@walletconnect/types";
 import EventEmitter from "node:events";
 import { truncateAddress } from "@services/common";

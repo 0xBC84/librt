@@ -1,7 +1,7 @@
 import { Command, Flags } from "@oclif/core";
 import WalletConnectClient, { CLIENT_EVENTS } from "@walletconnect/client";
 import { SessionTypes } from "@walletconnect/types";
-import { getWallet } from "@services/ethers";
+import { getWallet } from "@services/blockchain";
 
 export default class Pair extends Command {
   static description = "Create connection pair.";
