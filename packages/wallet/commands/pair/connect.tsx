@@ -3,7 +3,7 @@ import { Command, Flags } from "@oclif/core";
 import { Box, render, Text, useInput } from "ink";
 import { Done, Error, Indicator, Info, Layout } from "@librt/ui";
 import WalletConnectClient, { CLIENT_EVENTS } from "@walletconnect/client";
-import { Account, getChainByWCId, getWallets } from "@services/blockchain";
+import { Account, getChainByWCId, getAccounts } from "@services/blockchain";
 import { SessionTypes } from "@walletconnect/types";
 import EventEmitter from "node:events";
 import { truncateAddress } from "@services/common";
@@ -27,7 +27,7 @@ const SessionApproval = ({
   onDenied: () => void;
 }) => {
   let isComplete = false;
-  const wallets = getWallets();
+  const wallets = getAccounts();
   const [selected, setSelected] = useState(0);
   const [approved, setApproved] = useState<number[]>([]);
 

@@ -14,20 +14,27 @@ export type Account = {
   address: string;
 };
 
-// @todo Rename to getEthAccount()
-export const getWallet = () => {
-  const { mneomic, node, network } = getConfig();
+export const getEip155WalletProvider = ({
+  mnemonic,
+  node,
+  network,
+}: {
+  mnemonic: string;
+  node: string;
+  network: string;
+}) => {
   const _network = network === "localhost" ? undefined : network;
   const _provider = new ethers.providers.JsonRpcProvider(node, _network);
-  return ethers.Wallet.fromMnemonic(mneomic).connect(_provider);
+  return ethers.Wallet.fromMnemonic(mnemonic).connect(_provider);
 };
 
-// @todo Rename to getAccounts
 // @todo Support multiple protocols and networks.
-export const getWallets = (): Account[] => {
+export const getAccounts = (): Account[] => {
   const wallets: Account[] = [];
-  const { node } = getConfig();
-  const wallet = getWallet();
+
+  // @todo Get multiple from config.
+  const { mnemonic, node, network } = getConfig();
+  const wallet = getEip155WalletProvider({ mnemonic, node, network });
 
   let chain;
   try {

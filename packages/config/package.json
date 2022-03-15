@@ -1,0 +1,14 @@
+{
+  "name": "@librt/config",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "lint": "yarn lint:prettier && yarn lint:eslint",
+    "lint:write": "yarn lint:prettier:write && yarn lint:eslint:write",
+    "lint:prettier:write": "prettier --write .",
+    "lint:prettier": "prettier --check .",
+    "lint:eslint": "eslint .",
+    "lint:eslint:write": "eslint --fix ."
+  }
+}

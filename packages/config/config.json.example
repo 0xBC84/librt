@@ -1,0 +1,10 @@
+{
+  "accounts": [
+    {
+      "name": "Account 1",
+      "network": "eip155:42",
+      "mnemonic": "",
+      "node": "http://hardhat:8545"
+    }
+  ]
+}
