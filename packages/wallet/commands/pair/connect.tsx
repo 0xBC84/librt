@@ -10,11 +10,8 @@ import { truncateAddress } from "@services/common";
 import { Chain } from "@librt/chain";
 
 // @todo CTRL-C doesn't exit
-// @todo Implement multiple addresses
-// @todo Tags
 // @todo Handle errors
 // @todo Add listen timeout
-// @todo Implement proposal accept view
 
 const CLI_EVENT_SESSION_REVIEW_APPROVED = "session.review.approved";
 const CLI_EVENT_SESSION_REVIEW_DENIED = "session.review.denied";
