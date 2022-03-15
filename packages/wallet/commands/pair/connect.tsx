@@ -340,6 +340,7 @@ const PairConnect = ({ uri }: { uri: string }) => {
   const [wc, setClient] = useState<WalletConnectClient | null>(null);
   const [components, setComponents] = useState<React.ReactNode[]>([]);
 
+  // @todo Get WC config dynamically
   useEffect(() => {
     WalletConnectClient.init({
       controller: true,
