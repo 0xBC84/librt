@@ -1,7 +1,7 @@
 import data from "./chains.json"
 
 export type Chain = {
-  name?: string,
+  name: string,
   title?: string,
   chain?: string,
   icon?: string,
@@ -14,7 +14,7 @@ export type Chain = {
   },
   infoURL?: string,
   shortName?: string,
-  chainId?: number,
+  chainId: number,
   networkId?: number,
   ens?: {
     registry?: string
@@ -26,6 +26,16 @@ export type Chain = {
   }[]
 }
 
-const chains: Chain[] = data
+const CHAINS: Chain[] = data
 
-export default chains
+const PROTOCOL_SUPPORTED = new Set(["eip155"]);
+
+export const getSupportedChainById = (protocol: string, id: number) => {
+  if (!PROTOCOL_SUPPORTED.has(protocol)) {
+    throw new Error(`protocol \`${protocol}\` is not supported.`);
+  }
+
+  return data.find(chain => id === chain.chainId)
+}
+
+export default CHAINS

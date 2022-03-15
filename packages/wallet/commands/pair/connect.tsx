@@ -3,11 +3,12 @@ import { Command, Flags } from "@oclif/core";
 import { Box, render, Text, useInput } from "ink";
 import { Done, Error, Indicator, Info, Layout } from "@librt/ui";
 import WalletConnectClient, { CLIENT_EVENTS } from "@walletconnect/client";
-import { getWallet } from "@services/ethers";
+import { getChainByWCId, getWallet } from "@services/ethers";
 import { SessionTypes } from "@walletconnect/types";
 import EventEmitter from "node:events";
 import { truncateAddress } from "@services/common";
 
+// @todo CTRL-C doesn't exit
 // @todo Implement multiple addresses
 // @todo Tags
 // @todo Handle errors
@@ -115,13 +116,22 @@ const SessionApproval = ({
   );
 };
 
-// @todo Chain display name.
 const SessionInfo = ({ proposal }: { proposal: SessionTypes.Proposal }) => {
   const labelWidth = 15;
   const metadata = proposal.proposer.metadata;
 
-  const chains = proposal.permissions.blockchain.chains || ["NA"];
+  const chains = [];
   const permissions = Object.values(proposal.permissions.jsonrpc.methods) || [];
+
+  try {
+    for (const chain of proposal.permissions.blockchain.chains) {
+      const chainData = getChainByWCId(chain);
+      if (chainData) chains.push(chainData);
+    }
+  } catch (error: any) {
+    cli.emit(CLI_EVENT_EXCEPTION, error.message);
+    return null;
+  }
 
   return (
     <Box flexDirection="column">
@@ -147,7 +157,9 @@ const SessionInfo = ({ proposal }: { proposal: SessionTypes.Proposal }) => {
         </Box>
         <Box flexDirection="column">
           {chains.map((chain) => (
-            <Text key={chain}>{chain}</Text>
+            <Text key={chain.chainId}>
+              {chain.name} {chain?.chain ? `(${chain.chain})` : null}
+            </Text>
           ))}
         </Box>
       </Box>
