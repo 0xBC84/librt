@@ -341,6 +341,7 @@ const SegmentSessionException = ({
   );
 };
 
+// @todo Use EventEmitter.once() ?
 const PairConnect = ({ uri }: { uri: string }) => {
   const [wc, setClient] = useState<WalletConnectClient | null>(null);
   const [components, setComponents] = useState<React.ReactNode[]>([]);
