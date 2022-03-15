@@ -3,7 +3,7 @@ import { Command, Flags } from "@oclif/core";
 import { Box, render, Text, useInput } from "ink";
 import { Done, Error, Indicator, Info, Layout } from "@librt/ui";
 import WalletConnectClient, { CLIENT_EVENTS } from "@walletconnect/client";
-import { getChainByWCId, getWallet, getWallets } from "@services/blockchain";
+import { Account, getChainByWCId, getWallets } from "@services/blockchain";
 import { SessionTypes } from "@walletconnect/types";
 import EventEmitter from "node:events";
 import { truncateAddress } from "@services/common";
@@ -26,7 +26,7 @@ const SessionApproval = ({
   onApproved,
   onDenied,
 }: {
-  onApproved: () => void;
+  onApproved: (accounts: Account[]) => void;
   onDenied: () => void;
 }) => {
   let isComplete = false;
@@ -37,9 +37,7 @@ const SessionApproval = ({
   // @todo Filter accounts that aren't supported
   const accountList = wallets.map((wallet) => ({
     address: wallet.address,
-    tags: [wallet.accountName, wallet.chain?.chain, wallet.chain?.name]
-      .filter(Boolean)
-      .join(", "),
+    tags: [wallet.name, wallet.chain.chain, wallet.chain.name].join(", "),
   }));
 
   const isSelected = (i: number) => {
@@ -79,7 +77,8 @@ const SessionApproval = ({
 
     if (key.return && !isComplete) {
       isComplete = true;
-      if (approved.length > 0) onApproved();
+      const accounts = wallets.filter((_, i) => approved.includes(i));
+      if (approved.length > 0) onApproved(accounts);
       else onDenied();
     }
 
@@ -250,8 +249,8 @@ const SegmentSessionReview = ({
   cli: EventEmitter;
   proposal: SessionTypes.Proposal;
 }) => {
-  const doSessionReviewed = () => {
-    cli.emit(CLI_EVENT_SESSION_REVIEW_APPROVED, proposal);
+  const doSessionApproved = (accounts: Account[]) => {
+    cli.emit(CLI_EVENT_SESSION_REVIEW_APPROVED, proposal, accounts);
   };
 
   const doSessionDenied = () => {
@@ -268,7 +267,7 @@ const SegmentSessionReview = ({
       </Box>
       <Box marginTop={1} marginBottom={1}>
         <SessionApproval
-          onApproved={doSessionReviewed}
+          onApproved={doSessionApproved}
           onDenied={doSessionDenied}
         />
       </Box>
@@ -279,17 +278,15 @@ const SegmentSessionReview = ({
 const SegmentSessionApproval = ({
   wc,
   proposal,
+  accounts,
 }: {
   wc: WalletConnectClient;
   proposal: SessionTypes.Proposal;
+  accounts: Account[];
 }) => {
-  const wallet = getWallet();
-
-  // @todo Build protocol and network dynamically.
-  // @todo Get chosen options.
   const response = {
     state: {
-      accounts: ["eip155:42:" + wallet.address],
+      accounts: accounts.map((account) => account.id),
     },
   };
 
@@ -403,13 +400,14 @@ const PairConnect = ({ uri }: { uri: string }) => {
     if (wc) {
       cli.on(
         CLI_EVENT_SESSION_REVIEW_APPROVED,
-        (proposal: SessionTypes.Proposal) => {
+        (proposal: SessionTypes.Proposal, accounts: Account[]) => {
           setComponents((components: React.ReactNode[]) => [
             ...components,
             <SegmentSessionApproval
               key="do-session-approval"
               wc={wc}
               proposal={proposal}
+              accounts={accounts}
             />,
           ]);
         }
