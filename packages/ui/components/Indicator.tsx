@@ -83,6 +83,7 @@ export const Indicator = ({
       if (interval.current) clearInterval(interval.current);
       setStep(limit);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

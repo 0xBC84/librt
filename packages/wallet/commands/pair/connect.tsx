@@ -354,6 +354,7 @@ const PairConnect = ({ uri }: { uri: string }) => {
     })
       .then((wc) => setClient(wc))
       .catch(cliCatchException);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
