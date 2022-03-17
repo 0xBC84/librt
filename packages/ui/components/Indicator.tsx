@@ -2,12 +2,17 @@ import React, { useEffect, useRef, useState } from "react";
 import { Box, Text } from "ink";
 import { Info } from "@components/Info";
 
+// @todo Move handle execution to caller.
 export const Indicator = ({
   label,
   handler,
+  onCatch,
+  timeout = 10000,
 }: {
   label: string;
   handler?: () => Promise<any>;
+  onCatch?: (e: any) => void;
+  timeout?: number;
 }) => {
   const limit = 3;
 
@@ -17,11 +22,22 @@ export const Indicator = ({
 
   useEffect(() => {
     if (handler && interval.current) {
-      handler().finally(() => {
-        if (interval.current) clearInterval(interval.current);
-        setDone(true);
-        setStep(limit);
-      });
+      // Attempt to finish handler or timeout.
+      Promise.race([
+        handler().catch(onCatch),
+        new Promise((_, reject) => {
+          setTimeout(() => {
+            const error = new Error("request timed out");
+            reject(error);
+          }, timeout);
+        }).catch(onCatch),
+      ])
+        .catch(onCatch)
+        .finally(() => {
+          if (interval.current) clearInterval(interval.current);
+          setDone(true);
+          setStep(limit);
+        });
     }
   }, [handler, interval.current]);
 

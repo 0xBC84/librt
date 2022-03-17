@@ -19,6 +19,9 @@ const CLI_EVENT_SESSION_REVIEW_DENIED = "session.review.denied";
 const CLI_EVENT_EXCEPTION = "exception";
 
 const cli = new EventEmitter();
+const cliCatchException = (error: any) => {
+  cli.emit(CLI_EVENT_EXCEPTION, error.message);
+};
 
 const SessionApproval = ({
   onApproved,
@@ -209,6 +212,7 @@ const SegmentPairProposal = ({
     <Indicator
       label="attempting to pair"
       handler={doPairProposal}
+      onCatch={cliCatchException}
       key="do-pair-proposal"
     />
   );
@@ -228,6 +232,7 @@ const SegmentSessionProposal = ({ wc }: { wc: WalletConnectClient }) => {
       key="do-session-proposal"
       label="waiting for session proposals"
       handler={doSessionProposal}
+      onCatch={cliCatchException}
     />
   );
 };
@@ -287,6 +292,7 @@ const SegmentSessionApproval = ({
   return (
     <Box>
       <Indicator
+        onCatch={cliCatchException}
         label="waiting for session approval"
         handler={doSessionApproval}
       />
