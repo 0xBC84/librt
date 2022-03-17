@@ -13,7 +13,7 @@ export type Config = {
     walletConnect: {
       projectId: string;
       relayUrl: string;
-      metaData: {
+      metadata: {
         name: string;
         description: string;
         url: string;

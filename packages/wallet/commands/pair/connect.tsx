@@ -335,7 +335,6 @@ const SegmentSessionException = ({
   );
 };
 
-// @todo Use EventEmitter.once() ?
 const PairConnect = ({ uri }: { uri: string }) => {
   const { wallet } = getConfig();
   const [wc, setClient] = useState<WalletConnectClient | null>(null);
@@ -345,8 +344,8 @@ const PairConnect = ({ uri }: { uri: string }) => {
     WalletConnectClient.init({
       controller: true,
       projectId: wallet.walletConnect.projectId,
-      relayUrl: wallet.walletConnect.projectId,
-      metadata: wallet.walletConnect.metaData,
+      relayUrl: wallet.walletConnect.relayUrl,
+      metadata: wallet.walletConnect.metadata,
     }).then((wc) => {
       setClient(wc);
     });
@@ -362,7 +361,7 @@ const PairConnect = ({ uri }: { uri: string }) => {
 
   useEffect(() => {
     if (wc) {
-      wc.on(CLIENT_EVENTS.pairing.created, () => {
+      wc.once(CLIENT_EVENTS.pairing.created, () => {
         setComponents((components: React.ReactNode[]) => [
           ...components,
           <SegmentSessionProposal wc={wc} key="do-session-proposal" />,
@@ -373,7 +372,7 @@ const PairConnect = ({ uri }: { uri: string }) => {
 
   useEffect(() => {
     if (wc) {
-      wc.on(
+      wc.once(
         CLIENT_EVENTS.session.proposal,
         (proposal: SessionTypes.Proposal) => {
           setComponents((components: React.ReactNode[]) => [
@@ -391,7 +390,7 @@ const PairConnect = ({ uri }: { uri: string }) => {
 
   useEffect(() => {
     if (wc) {
-      cli.on(
+      cli.once(
         CLI_EVENT_SESSION_REVIEW_APPROVED,
         (proposal: SessionTypes.Proposal, accounts: Account[]) => {
           setComponents((components: React.ReactNode[]) => [
@@ -410,7 +409,7 @@ const PairConnect = ({ uri }: { uri: string }) => {
 
   useEffect(() => {
     if (wc) {
-      wc.on(CLIENT_EVENTS.session.created, () => {
+      wc.once(CLIENT_EVENTS.session.created, () => {
         setComponents((components: React.ReactNode[]) => [
           ...components,
           <SegmentSessionApproved key="session-approved" />,
@@ -424,7 +423,7 @@ const PairConnect = ({ uri }: { uri: string }) => {
   }, [wc]);
 
   useEffect(() => {
-    cli.on(CLI_EVENT_SESSION_REVIEW_DENIED, () => {
+    cli.once(CLI_EVENT_SESSION_REVIEW_DENIED, () => {
       setComponents((components: React.ReactNode[]) => [
         ...components,
         <SegmentSessionDenied key="session-denied" />,
