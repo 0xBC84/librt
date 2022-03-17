@@ -9,7 +9,5 @@
     "esModuleInterop": true,
     "moduleResolution": "node"
   },
-  "include": [
-    "index.ts"
-  ]
+  "include": ["index.ts"]
 }
