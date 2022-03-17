@@ -12,6 +12,7 @@ export type Config = {
 };
 
 // @todo Config from persistent storage
+// @todo Run object validation on config and run in command hook init
 // @todo Validate account.mnemonic is valid
 export const getConfig = (): Config => {
   return config;
