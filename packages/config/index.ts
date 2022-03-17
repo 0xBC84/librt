@@ -12,6 +12,7 @@ export type Config = {
 };
 
 // @todo Config from persistent storage
+// @todo Validate account.mnemonic is valid
 export const getConfig = (): Config => {
   return config;
 };

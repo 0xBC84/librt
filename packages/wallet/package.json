@@ -19,6 +19,7 @@
     "ink": "^3.2.0",
     "react": "^17.0.2",
     "@librt/chain": "*",
+    "@librt/config": "*",
     "@librt/ui": "*"
   },
   "engines": {

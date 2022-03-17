@@ -1,7 +1,7 @@
-import { getConfig } from "@services/config";
 import { isValidChainId } from "@walletconnect/utils";
 import { Chain, getSupportedChainById } from "@librt/chain";
 import { ethers } from "ethers";
+import { getConfig } from "@librt/config";
 
 type WalletProvider = ethers.Wallet | unknown;
 
@@ -21,41 +21,49 @@ export const getEip155WalletProvider = ({
 }: {
   mnemonic: string;
   node: string;
-  network: string;
+  network: number | "localhost";
 }) => {
   const _network = network === "localhost" ? undefined : network;
   const _provider = new ethers.providers.JsonRpcProvider(node, _network);
   return ethers.Wallet.fromMnemonic(mnemonic).connect(_provider);
 };
 
-// @todo Support multiple protocols and networks.
 export const getAccounts = (): Account[] => {
-  const wallets: Account[] = [];
+  const config = getConfig();
+  const accounts: Account[] = [];
 
-  // @todo Get multiple from config.
-  const { mnemonic, node, network } = getConfig();
-  const wallet = getEip155WalletProvider({ mnemonic, node, network });
+  for (const account of config.accounts || []) {
+    // Only support eip155 networks.
+    if (!account.network.startsWith("eip155")) continue;
+    let chain;
 
-  let chain;
-  try {
-    // @todo Get chain ID from `network` (kovan => 42)
-    chain = getChainByWCId("eip155:42");
-
-    if (chain) {
-      wallets.push({
-        node,
-        wallet,
-        chain,
-        name: "Account 1",
-        id: ["eip155", chain.chainId, wallet.address].join(":"),
-        address: wallet.address,
-      });
+    try {
+      chain = getChainByWCId(account.network);
+    } catch {
+      // Fail silently.
+      continue;
     }
-  } catch {
-    // fail silently.
+
+    // Keeps compiler happy.
+    if (!chain) continue;
+
+    const wallet = getEip155WalletProvider({
+      mnemonic: account.mnemonic,
+      node: account.node,
+      network: chain.chainId,
+    });
+
+    accounts.push({
+      wallet,
+      chain,
+      name: account.name,
+      node: account.node,
+      id: ["eip155", chain.chainId, wallet.address].join(":"),
+      address: wallet.address,
+    });
   }
 
-  return wallets;
+  return accounts;
 };
 
 export const getChainByWCId = (chain: string) => {

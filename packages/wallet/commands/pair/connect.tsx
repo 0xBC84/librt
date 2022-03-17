@@ -27,12 +27,12 @@ const SessionApproval = ({
   onDenied: () => void;
 }) => {
   let isComplete = false;
-  const wallets = getAccounts();
+  const accounts = getAccounts();
   const [selected, setSelected] = useState(0);
   const [approved, setApproved] = useState<number[]>([]);
 
   // @todo Filter accounts that aren't supported
-  const accountList = wallets.map((wallet) => ({
+  const accountList = accounts.map((wallet) => ({
     address: wallet.address,
     tags: [wallet.name, wallet.chain.chain, wallet.chain.name].join(", "),
   }));
@@ -74,8 +74,8 @@ const SessionApproval = ({
 
     if (key.return && !isComplete) {
       isComplete = true;
-      const accounts = wallets.filter((_, i) => approved.includes(i));
-      if (approved.length > 0) onApproved(accounts);
+      const approvedAccounts = accounts.filter((_, i) => approved.includes(i));
+      if (approved.length > 0) onApproved(approvedAccounts);
       else onDenied();
     }
 
