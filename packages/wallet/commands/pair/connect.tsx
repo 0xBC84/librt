@@ -196,17 +196,10 @@ const SegmentPairProposal = ({
   wc,
   uri,
 }: {
-  wc?: WalletConnectClient | null;
+  wc: WalletConnectClient;
   uri: string;
 }) => {
   const doPairProposal = () => {
-    if (!wc) {
-      return new Promise((resolve) => {
-        cli.emit(CLI_EVENT_EXCEPTION);
-        resolve(null);
-      });
-    }
-
     return wc.pair({ uri }).catch((error) => {
       cli.emit(CLI_EVENT_EXCEPTION, error.message);
     });
