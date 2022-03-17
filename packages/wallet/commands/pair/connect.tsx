@@ -8,6 +8,7 @@ import { SessionTypes } from "@walletconnect/types";
 import EventEmitter from "node:events";
 import { truncateAddress } from "@services/common";
 import { Chain } from "@librt/chain";
+import { getConfig } from "@librt/config";
 
 // @todo CTRL-C doesn't exit
 // @todo Handle errors
@@ -31,7 +32,6 @@ const SessionApproval = ({
   const [selected, setSelected] = useState(0);
   const [approved, setApproved] = useState<number[]>([]);
 
-  // @todo Filter accounts that aren't supported
   const accountList = accounts.map((wallet) => ({
     address: wallet.address,
     tags: [wallet.name, wallet.chain.chain, wallet.chain.name].join(", "),
@@ -337,21 +337,16 @@ const SegmentSessionException = ({
 
 // @todo Use EventEmitter.once() ?
 const PairConnect = ({ uri }: { uri: string }) => {
+  const { wallet } = getConfig();
   const [wc, setClient] = useState<WalletConnectClient | null>(null);
   const [components, setComponents] = useState<React.ReactNode[]>([]);
 
-  // @todo Get WC config dynamically
   useEffect(() => {
     WalletConnectClient.init({
       controller: true,
-      projectId: "004cbcf1b212d7e8786473c4cd8073cc",
-      relayUrl: "wss://relay.walletconnect.com",
-      metadata: {
-        name: "librt",
-        description: "librt",
-        url: "https://walletconnect.com/",
-        icons: [],
-      },
+      projectId: wallet.walletConnect.projectId,
+      relayUrl: wallet.walletConnect.projectId,
+      metadata: wallet.walletConnect.metaData,
     }).then((wc) => {
       setClient(wc);
     });

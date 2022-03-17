@@ -9,6 +9,18 @@ export type Account = {
 
 export type Config = {
   accounts: Account[];
+  wallet: {
+    walletConnect: {
+      projectId: string;
+      relayUrl: string;
+      metaData: {
+        name: string;
+        description: string;
+        url: string;
+        icons: string[];
+      };
+    };
+  };
 };
 
 // @todo Config from persistent storage
