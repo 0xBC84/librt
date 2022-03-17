@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Command } from "@oclif/core";
 import { Box, render, Text, useInput } from "ink";
-import { Indicator, Info, Layout } from "@librt/ui";
+import { Indicator, Info, Layout, useIndicator } from "@librt/ui";
 
 type AccountListItem = {
   name: string;
@@ -15,35 +15,36 @@ const AccountListTable = () => {
   const [selected, setSelected] = useState(0);
   const [saved, setSaved] = useState(false);
   const [accountList, setAccountList] = useState<AccountListItem[]>([]);
-
-  const handler = () =>
-    new Promise((resolve) => {
-      setTimeout(() => {
-        const data: AccountListItem[] = [
-          {
-            name: "Spending",
-            currencySymbol: "ETH",
-            balance: "0.00000",
-            active: true,
-          },
-          {
-            name: "Saving",
-            currencySymbol: "ETH",
-            balance: "0.00000",
-            active: false,
-          },
-          {
-            name: "Expense",
-            currencySymbol: "ETH",
-            balance: "0.00000",
-            active: false,
-          },
-        ];
-
-        setAccountList(data);
-        resolve(null);
-      }, 2000);
-    });
+  const indicator = useIndicator({
+    onLoad: () => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          const data: AccountListItem[] = [
+            {
+              name: "Spending",
+              currencySymbol: "ETH",
+              balance: "0.00000",
+              active: true,
+            },
+            {
+              name: "Saving",
+              currencySymbol: "ETH",
+              balance: "0.00000",
+              active: false,
+            },
+            {
+              name: "Expense",
+              currencySymbol: "ETH",
+              balance: "0.00000",
+              active: false,
+            },
+          ];
+          setAccountList(data);
+          resolve(null);
+        }, 2000);
+      });
+    },
+  });
 
   const isSelected = (i: number) => {
     return i === selected;
@@ -71,7 +72,7 @@ const AccountListTable = () => {
 
   return (
     <>
-      <Indicator handler={handler} label="fetching accounts" />
+      <Indicator indicator={indicator} label="fetching accounts" />
       <Box marginTop={1} marginBottom={1} flexDirection="column">
         {accountList.map((account, i) => (
           <Box flexDirection="row" key={account.name}>
@@ -100,7 +101,7 @@ const AccountListTable = () => {
           </Box>
         ))}
       </Box>
-      {saved && <Indicator label="updating accounts" />}
+      {saved && <Indicator indicator={indicator} label="updating accounts" />}
     </>
   );
 };

@@ -1,45 +1,89 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { Box, Text } from "ink";
 import { Info } from "@components/Info";
 
-// @todo Move handle execution to caller.
+type IndicatorHookBindings = {
+  doLoad: () => Promise<unknown>;
+  isLoading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
+  isComplete: boolean;
+  setComplete: Dispatch<SetStateAction<boolean>>;
+  isError: boolean;
+  setError: Dispatch<SetStateAction<boolean>>;
+};
+
+export const useIndicator = ({
+  onLoad,
+  onTimeout,
+  timeout = 10_000,
+}: {
+  onLoad: () => Promise<any>;
+  onTimeout?: () => void;
+  timeout?: number;
+}): IndicatorHookBindings => {
+  const [isLoading, setLoading] = useState(false);
+  const [isComplete, setComplete] = useState(false);
+  const [isError, setError] = useState(false);
+
+  const doLoad = () => {
+    setLoading(true);
+    let isResolved = false;
+    return Promise.race([
+      onLoad()
+        .then(() => {
+          isResolved = true;
+        })
+        .catch(() => setError(true)),
+      new Promise((resolve) => {
+        setTimeout(() => {
+          if (!isResolved) {
+            setError(true);
+            onTimeout && onTimeout();
+          }
+
+          resolve(null);
+        }, timeout);
+      }),
+    ]).finally(() => {
+      setComplete(true);
+      setLoading(false);
+    });
+  };
+
+  return {
+    doLoad,
+    isLoading,
+    setLoading,
+    isComplete,
+    setComplete,
+    isError,
+    setError,
+  };
+};
+
 export const Indicator = ({
   label,
-  handler,
-  onCatch,
-  timeout = 10000,
+  indicator,
 }: {
   label: string;
-  handler?: () => Promise<any>;
-  onCatch?: (e: any) => void;
-  timeout?: number;
+  indicator: IndicatorHookBindings;
 }) => {
   const limit = 3;
-
   const interval = useRef<NodeJS.Timer | null>(null);
-  const [isDone, setDone] = useState(!handler);
   const [step, setStep] = useState(0);
 
   useEffect(() => {
-    if (handler && interval.current) {
-      // Attempt to finish handler or timeout.
-      Promise.race([
-        handler().catch(onCatch),
-        new Promise((_, reject) => {
-          setTimeout(() => {
-            const error = new Error("request timed out");
-            reject(error);
-          }, timeout);
-        }).catch(onCatch),
-      ])
-        .catch(onCatch)
-        .finally(() => {
-          if (interval.current) clearInterval(interval.current);
-          setDone(true);
-          setStep(limit);
-        });
-    }
-  }, [handler, interval.current]);
+    indicator.doLoad().finally(() => {
+      if (interval.current) clearInterval(interval.current);
+      setStep(limit);
+    });
+  }, []);
 
   useEffect(() => {
     interval.current = setInterval(() => {
@@ -62,7 +106,8 @@ export const Indicator = ({
     .fill(" ")
     .join("");
 
-  const ellipsis = isDone ? "..." : ellipsisDot + ellipsisSpace;
+  const ellipsis = indicator.isComplete ? "..." : ellipsisDot + ellipsisSpace;
+  const message = indicator.isError ? "error" : "done";
 
   return (
     <Box>
@@ -73,7 +118,7 @@ export const Indicator = ({
           {label} {ellipsis}
           <> </>
         </>
-        {isDone && "done"}
+        {indicator.isComplete && message}
       </Text>
     </Box>
   );

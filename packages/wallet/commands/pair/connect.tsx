@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Command, Flags } from "@oclif/core";
 import { Box, render, Text, useInput } from "ink";
-import { Done, Error, Indicator, Info, Layout } from "@librt/ui";
+import { Done, Error, Indicator, Info, Layout, useIndicator } from "@librt/ui";
 import WalletConnectClient, { CLIENT_EVENTS } from "@walletconnect/client";
 import { Account, getChainByWCId, getAccounts } from "@services/blockchain";
 import { SessionTypes } from "@walletconnect/types";
@@ -11,8 +11,6 @@ import { Chain } from "@librt/chain";
 import { getConfig } from "@librt/config";
 
 // @todo CTRL-C doesn't exit
-// @todo Handle errors
-// @todo Add listen timeout
 
 const CLI_EVENT_SESSION_REVIEW_APPROVED = "session.review.approved";
 const CLI_EVENT_SESSION_REVIEW_DENIED = "session.review.denied";
@@ -202,37 +200,43 @@ const SegmentPairProposal = ({
   wc: WalletConnectClient;
   uri: string;
 }) => {
-  const doPairProposal = () => {
-    return wc.pair({ uri }).catch((error) => {
-      cli.emit(CLI_EVENT_EXCEPTION, error.message);
-    });
-  };
+  const indicator = useIndicator({
+    onTimeout: () => {
+      cli.emit(CLI_EVENT_EXCEPTION, "request timed out");
+    },
+    onLoad: () => {
+      return wc.pair({ uri }).catch(cliCatchException);
+    },
+  });
 
   return (
     <Indicator
+      indicator={indicator}
       label="attempting to pair"
-      handler={doPairProposal}
-      onCatch={cliCatchException}
       key="do-pair-proposal"
     />
   );
 };
 
 const SegmentSessionProposal = ({ wc }: { wc: WalletConnectClient }) => {
-  const doSessionProposal = () => {
-    return new Promise((resolve) => {
-      wc.on(CLIENT_EVENTS.session.proposal, () => {
-        resolve(null);
+  const indicator = useIndicator({
+    onTimeout: () => {
+      cli.emit(CLI_EVENT_EXCEPTION, "request timed out");
+    },
+    onLoad: () => {
+      return new Promise((resolve) => {
+        wc.on(CLIENT_EVENTS.session.proposal, () => {
+          resolve(null);
+        });
       });
-    });
-  };
+    },
+  });
 
   return (
     <Indicator
       key="do-session-proposal"
       label="waiting for session proposals"
-      handler={doSessionProposal}
-      onCatch={cliCatchException}
+      indicator={indicator}
     />
   );
 };
@@ -285,17 +289,19 @@ const SegmentSessionApproval = ({
     },
   };
 
-  const doSessionApproval = () => {
-    return wc.approve({ proposal, response });
-  };
+  const indicator = useIndicator({
+    timeout: 30_000,
+    onTimeout: () => {
+      cli.emit(CLI_EVENT_EXCEPTION, "request timed out");
+    },
+    onLoad: () => {
+      return wc.approve({ proposal, response }).catch(cliCatchException);
+    },
+  });
 
   return (
     <Box>
-      <Indicator
-        onCatch={cliCatchException}
-        label="waiting for session approval"
-        handler={doSessionApproval}
-      />
+      <Indicator label="waiting for session approval" indicator={indicator} />
     </Box>
   );
 };
@@ -345,9 +351,9 @@ const PairConnect = ({ uri }: { uri: string }) => {
       projectId: wallet.walletConnect.projectId,
       relayUrl: wallet.walletConnect.relayUrl,
       metadata: wallet.walletConnect.metadata,
-    }).then((wc) => {
-      setClient(wc);
-    });
+    })
+      .then((wc) => setClient(wc))
+      .catch(cliCatchException);
   }, []);
 
   useEffect(() => {
