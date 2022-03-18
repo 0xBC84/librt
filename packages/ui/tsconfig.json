@@ -12,11 +12,13 @@
     "moduleResolution": "node",
     "baseUrl": "./",
     "paths": {
-      "@components/*": ["components/*"]
+      "@components/*": ["components/*"],
+      "@services/*": ["services/*"]
     }
   },
   "include": [
     "./index.ts",
     "./components",
+    "./services"
   ]
 }

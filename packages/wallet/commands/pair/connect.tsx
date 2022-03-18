@@ -9,8 +9,7 @@ import EventEmitter from "node:events";
 import { truncateAddress } from "@services/common";
 import { Chain } from "@librt/chain";
 import { getConfig } from "@librt/config";
-
-// @todo CTRL-C doesn't exit
+import { useForceProcessExit } from "@librt/ui/dist/services/ui";
 
 const CLI_EVENT_SESSION_REVIEW_APPROVED = "session.review.approved";
 const CLI_EVENT_SESSION_REVIEW_DENIED = "session.review.denied";
@@ -341,6 +340,9 @@ const SegmentSessionException = ({
 };
 
 const PairConnect = ({ uri }: { uri: string }) => {
+  // @todo Remove and gracefully exit on CTRL-C.
+  useForceProcessExit();
+
   const { wallet } = getConfig();
   const [wc, setClient] = useState<WalletConnectClient | null>(null);
   const [components, setComponents] = useState<React.ReactNode[]>([]);
