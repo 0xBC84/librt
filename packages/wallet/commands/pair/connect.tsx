@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Command, Flags } from "@oclif/core";
 import { Box, render, Text, useInput } from "ink";
-import { Done, Error, Indicator, Info, Layout, useIndicator } from "@librt/ui";
+import {
+  Done,
+  Error,
+  Indicator,
+  Info,
+  Layout,
+  useForceProcessExit,
+  useIndicator,
+} from "@librt/ui";
 import WalletConnectClient, { CLIENT_EVENTS } from "@walletconnect/client";
 import { Account, getChainByWCId, getAccounts } from "@services/blockchain";
 import { SessionTypes } from "@walletconnect/types";
@@ -9,7 +17,6 @@ import EventEmitter from "node:events";
 import { truncateAddress } from "@services/common";
 import { Chain } from "@librt/chain";
 import { getConfig } from "@librt/config";
-import { useForceProcessExit } from "@librt/ui/dist/services/ui";
 
 const CLI_EVENT_SESSION_REVIEW_APPROVED = "session.review.approved";
 const CLI_EVENT_SESSION_REVIEW_DENIED = "session.review.denied";
