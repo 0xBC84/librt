@@ -95,8 +95,6 @@ importers:
       '@walletconnect/ethereum-provider': ^2.0.0-beta.23
       '@walletconnect/types': ^2.0.0-beta.23
       bn.js: ^5.2.0
-      chalk: ^4.1.2
-      enquirer: ^2.3.6
       ethers: ^5.5.4
     dependencies:
       '@librt/chain': link:../../lib/chain
@@ -107,8 +105,6 @@ importers:
       '@walletconnect/ethereum-provider': 2.0.0-beta.23
       '@walletconnect/types': 2.0.0-beta.23
       bn.js: 5.2.0
-      chalk: 4.1.2
-      enquirer: 2.3.6
       ethers: 5.6.1
 
   app/node:
@@ -127,10 +123,9 @@ importers:
       '@walletconnect/types': ^2.0.0-beta.23
       '@walletconnect/utils': ^2.0.0-beta.23
       bn.js: ^5.2.0
-      chalk: ^4.1.2
-      enquirer: ^2.3.6
       ethers: ^5.5.4
       ink: ^3.2.0
+      lowdb: ^3.0.0
       react: ^17.0.2
     dependencies:
       '@librt/chain': link:../../lib/chain
@@ -144,10 +139,9 @@ importers:
       '@walletconnect/types': 2.0.0-beta.23
       '@walletconnect/utils': 2.0.0-beta.23
       bn.js: 5.2.0
-      chalk: 4.1.2
-      enquirer: 2.3.6
       ethers: 5.6.1
       ink: 3.2.0_00d6772dea80510e818fd171caaa025a
+      lowdb: 3.0.0
       react: 17.0.2
 
   lib/chain:
@@ -1884,6 +1878,7 @@ packages:
   /ansi-colors/4.1.1:
     resolution: {integrity: sha512-JoX0apGbHaUJBNl6yF+p6JAFYZ666/hhCGKN5t9QFjbJQKUU/g8MNbFDbvfrgKXvI1QpZplPOnwIo99lX/AAmA==}
     engines: {node: '>=6'}
+    dev: true
 
   /ansi-escapes/3.2.0:
     resolution: {integrity: sha512-cBhpre4ma+U0T1oM5fXg7Dy1Jw7zzwv7lt/GoCpr+hDQJoYnKVPLL4dCvSEFMmQurOQvSrwT7SL/DAlhBI97RQ==}
@@ -3117,6 +3112,7 @@ packages:
     engines: {node: '>=8.6'}
     dependencies:
       ansi-colors: 4.1.1
+    dev: true
 
   /env-paths/2.2.1:
     resolution: {integrity: sha512-+h1lkLKhZMTYjog1VEpJNG7NZJWcuc2DDk/qsqSTRRCOXiLjeQ1d1/udrUGhqMxUgAlwKNZ0cf2uqan5GLuS2A==}
@@ -5385,6 +5381,13 @@ packages:
       get-func-name: 2.0.0
     dev: true
 
+  /lowdb/3.0.0:
+    resolution: {integrity: sha512-9KZRulmIcU8fZuWiaM0d5e2/nPnrFyXkeXVpqT+MJS+vgbgOf1EbtvgQmba8HwUFgDl1oeZR6XqEJnkJmQdKmg==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    dependencies:
+      steno: 2.1.0
+    dev: false
+
   /lru-cache/5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
     dependencies:
@@ -7326,6 +7329,11 @@ packages:
     resolution: {integrity: sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==}
     engines: {node: '>= 0.8'}
     dev: true
+
+  /steno/2.1.0:
+    resolution: {integrity: sha512-mauOsiaqTNGFkWqIfwcm3y/fq+qKKaIWf1vf3ocOuTdco9XoHCO2AGF1gFYXuZFSWuP38Q8LBHBGJv2KnJSXyA==}
+    engines: {node: ^14.13.1 || >=16.0.0}
+    dev: false
 
   /strict-uri-encode/2.0.0:
     resolution: {integrity: sha1-ucczDHBChi9rFC3CdLvMWGbONUY=}

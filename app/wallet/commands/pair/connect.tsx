@@ -11,7 +11,12 @@ import {
   useIndicator,
 } from "@librt/ui";
 import WalletConnectClient, { CLIENT_EVENTS } from "@walletconnect/client";
-import { Account, getChainByWCId, getAccounts } from "@services/blockchain";
+import {
+  Account,
+  getChainByWCId,
+  getAccounts,
+  useWCClient,
+} from "@services/blockchain";
 import { SessionTypes } from "@walletconnect/types";
 import EventEmitter from "node:events";
 import { truncateAddress } from "@services/common";
@@ -350,21 +355,8 @@ const PairConnect = ({ uri }: { uri: string }) => {
   // @todo Remove and gracefully exit on CTRL-C.
   useForceProcessExit();
 
-  const { wallet } = getConfig();
-  const [wc, setClient] = useState<WalletConnectClient | null>(null);
+  const { client: wc } = useWCClient({ exceptionHandler: cliCatchException });
   const [components, setComponents] = useState<React.ReactNode[]>([]);
-
-  useEffect(() => {
-    WalletConnectClient.init({
-      controller: true,
-      projectId: wallet.walletConnect.projectId,
-      relayUrl: wallet.walletConnect.relayUrl,
-      metadata: wallet.walletConnect.metadata,
-    })
-      .then((wc) => setClient(wc))
-      .catch(cliCatchException);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     if (wc) {

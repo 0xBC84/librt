@@ -2,6 +2,8 @@ import { isValidChainId } from "@walletconnect/utils";
 import { Chain, getSupportedChainById } from "@librt/chain";
 import { ethers } from "ethers";
 import { getConfig } from "@librt/config";
+import { useEffect, useState } from "react";
+import WalletConnectClient from "@walletconnect/client";
 
 type WalletProvider = ethers.Wallet | unknown;
 
@@ -14,6 +16,7 @@ export type Account = {
   address: string;
 };
 
+// @todo Eip155 to EIP155
 export const getEip155WalletProvider = ({
   mnemonic,
   node,
@@ -73,4 +76,26 @@ export const getChainByWCId = (chain: string) => {
 
   const [protocol, id] = chain.split(":");
   return getSupportedChainById(protocol, Number(id));
+};
+
+export const useWCClient = ({
+  exceptionHandler,
+}: {
+  exceptionHandler: (e: Error) => void;
+}) => {
+  const { wallet } = getConfig();
+  const [client, setClient] = useState<WalletConnectClient | null>(null);
+
+  useEffect(() => {
+    WalletConnectClient.init({
+      controller: true,
+      projectId: wallet.walletConnect.projectId,
+      relayUrl: wallet.walletConnect.relayUrl,
+      metadata: wallet.walletConnect.metadata,
+    })
+      .then((wc) => setClient(wc))
+      .catch(exceptionHandler);
+  }, []);
+
+  return { client };
 };
