@@ -4,14 +4,14 @@ LIBRT
 
 ```
 # Install and run.
-docker-compose run --rm node yarn setup
+docker-compose run --rm node pnpm install
 
 # Build.
-docker-compose run --rm node lerna run --stream build
-docker-compose run --rm node lerna run --stream lint
-docker-compose run --rm node lerna run --stream test
-docker-compose run --rm node lerna run --stream dev
-docker-compose run --rm node lerna run --stream deploy
+docker-compose run --rm node pnpm run build
+docker-compose run --rm node pnpm run lint
+docker-compose run --rm node pnpm run test
+docker-compose run --rm node pnpm run dev
+docker-compose run --rm node pnpm run deploy
 
 # dApps.
 

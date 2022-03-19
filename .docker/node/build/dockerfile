@@ -1,3 +1,4 @@
 FROM node:16
 RUN apt-get update && apt-get install -y curl git bash fish
+RUN curl -f https://get.pnpm.io/v6.16.js | node - add --global pnpm
 USER node

@@ -38,13 +38,13 @@
     "topics": {}
   },
   "scripts": {
-    "build": "yarn build:contract && yarn build:cli",
+    "build": "pnpm build:contract && pnpm build:cli",
     "build:contract": "hardhat clean && hardhat compile",
     "build:cli": "shx rm -rf dist && tsc -b && tsc-alias && oclif manifest && oclif readme",
     "deploy": "hardhat deploy --network $LIBRT_NETWORK",
     "dev": "tsc -w & tsc-alias -w",
-    "lint": "yarn lint:prettier && yarn lint:eslint",
-    "lint:write": "yarn lint:prettier:write && yarn lint:eslint:write",
+    "lint": "pnpm lint:prettier && pnpm lint:eslint",
+    "lint:write": "pnpm lint:prettier:write && pnpm lint:eslint:write",
     "lint:prettier:write": "prettier --write .",
     "lint:prettier": "prettier --check .",
     "lint:eslint": "eslint .",
