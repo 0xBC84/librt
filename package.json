@@ -1,12 +1,15 @@
 {
   "private": true,
   "workspaces": [
-    "packages/*"
+    "lib/*",
+    "app/*"
   ],
   "scripts": {
     "setup": "pnpm install",
     "dev": "pnpm --recursive --parallel dev",
-    "build": "pnpm run --parallel build",
+    "build": "pnpm build:lib && pnpm build:app",
+    "build:lib": "pnpm run --parallel --filter='{lib}' build",
+    "build:app": "pnpm run --parallel --filter='{app}' build",
     "lint": "pnpm run --parallel lint",
     "pack": "pnpm run --parallel pack",
     "prepare": "husky install"
