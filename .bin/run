@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -e
+set -u
+
+docker-compose run --rm node pnpm --filter "*/$1" cli:dev $2 -- "${@:3}"

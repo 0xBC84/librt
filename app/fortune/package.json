@@ -42,6 +42,7 @@
     "build:contract": "hardhat clean && hardhat compile",
     "build:cli": "shx rm -rf dist && tsc -b && tsc-alias && oclif manifest && oclif readme",
     "deploy": "hardhat deploy --network $LIBRT_NETWORK",
+    "cli:dev": "./bin/dev",
     "dev": "tsc -w & tsc-alias -w",
     "lint": "pnpm lint:prettier && pnpm lint:eslint",
     "lint:write": "pnpm lint:prettier:write && pnpm lint:eslint:write",

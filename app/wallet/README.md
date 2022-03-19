@@ -16,7 +16,7 @@ $ npm install -g @librt/wallet
 $ librt-wallet COMMAND
 running command...
 $ librt-wallet (--version)
-@librt/wallet/0.0.1 linux-arm64 node-v16.14.0
+@librt/wallet/0.0.1 linux-arm64 node-v16.14.2
 $ librt-wallet --help [COMMAND]
 USAGE
   $ librt-wallet COMMAND

@@ -1,15 +1,7 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "declaration": true,
-    "importHelpers": true,
-    "module": "commonjs",
     "outDir": "dist",
-    "strict": true,
-    "target": "esnext",
-    "jsx": "react",
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "moduleResolution": "node",
     "baseUrl": "./",
     "paths": {
       "@services/*": ["services/*"]
