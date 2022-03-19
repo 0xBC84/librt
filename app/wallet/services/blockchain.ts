@@ -16,8 +16,7 @@ export type Account = {
   address: string;
 };
 
-// @todo Eip155 to EIP155
-export const getEip155WalletProvider = ({
+export const getEIP155WalletProvider = ({
   mnemonic,
   node,
   network,
@@ -50,7 +49,7 @@ export const getAccounts = (): Account[] => {
     // Keeps compiler happy.
     if (!chain) continue;
 
-    const wallet = getEip155WalletProvider({
+    const wallet = getEIP155WalletProvider({
       mnemonic: account.mnemonic,
       node: account.node,
       network: chain.chainId,
