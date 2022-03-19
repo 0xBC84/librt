@@ -94,7 +94,7 @@ export const useWCClient = ({
     })
       .then((wc) => setClient(wc))
       .catch(exceptionHandler);
-  }, []);
+  }, [exceptionHandler, wallet]);
 
   return { client };
 };
