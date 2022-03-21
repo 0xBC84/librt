@@ -1,0 +1,20 @@
+{
+  "name": "@librt/storage",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "dependencies": {
+    "@librt/config": "*",
+    "keyvaluestorage": "^0.7.1",
+    "node-json-db": "^1.5.0"
+  },
+  "scripts": {
+    "build": "shx rm -rf dist && tsc -b && tsc-alias",
+    "dev": "tsc -w & tsc-alias -w",
+    "lint": "pnpm lint:prettier && pnpm lint:eslint",
+    "lint:write": "pnpm lint:prettier:write && pnpm lint:eslint:write",
+    "lint:prettier:write": "prettier --write .",
+    "lint:prettier": "prettier --check .",
+    "lint:eslint": "eslint .",
+    "lint:eslint:write": "eslint --fix ."
+  }
+}

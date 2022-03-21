@@ -1,4 +1,7 @@
 {
+  "storage": {
+    "uri": "$HOME/.config/librt/storage.json"
+  },
   "accounts": [
     {
       "name": "Account 1",

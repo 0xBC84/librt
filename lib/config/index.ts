@@ -8,6 +8,9 @@ export type Account = {
 };
 
 export type Config = {
+  storage: {
+    uri: string;
+  };
   accounts: Account[];
   wallet: {
     walletConnect: {
