@@ -4,8 +4,7 @@
   "main": "dist/index.js",
   "dependencies": {
     "@librt/config": "*",
-    "keyvaluestorage": "^0.7.1",
-    "node-json-db": "^1.5.0"
+    "keyvaluestorage": "^0.7.1"
   },
   "scripts": {
     "build": "shx rm -rf dist && tsc -b && tsc-alias",

@@ -5,6 +5,7 @@
     "librt-fortune": "bin/run"
   },
   "dependencies": {
+    "@librt/chain": "*",
     "@oclif/core": "^1.5.2",
     "@oclif/plugin-help": "^5.1.12",
     "@oclif/plugin-plugins": "^2.1.0",
@@ -12,10 +13,9 @@
     "@walletconnect/ethereum-provider": "^2.0.0-beta.23",
     "@walletconnect/types": "^2.0.0-beta.23",
     "bn.js": "^5.2.0",
-    "ethers": "^5.5.4",
-    "@librt/chain": "*"
+    "ethers": "^5.5.4"
   },
-  "dirname": "oex",
+  "dirname": "dist",
   "engines": {
     "node": ">=16.0.0"
   },
