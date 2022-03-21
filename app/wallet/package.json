@@ -15,7 +15,6 @@
     "bn.js": "^5.2.0",
     "ethers": "^5.5.4",
     "ink": "^3.2.0",
-    "lowdb": "^3.0.0",
     "react": "^17.0.2",
     "@librt/chain": "*",
     "@librt/config": "*",

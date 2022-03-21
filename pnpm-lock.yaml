@@ -114,6 +114,7 @@ importers:
     specifiers:
       '@librt/chain': '*'
       '@librt/config': '*'
+      '@librt/storage': '*'
       '@librt/ui': '*'
       '@oclif/core': ^1.5.2
       '@oclif/plugin-help': ^5.1.12
@@ -125,11 +126,11 @@ importers:
       bn.js: ^5.2.0
       ethers: ^5.5.4
       ink: ^3.2.0
-      lowdb: ^3.0.0
       react: ^17.0.2
     dependencies:
       '@librt/chain': link:../../lib/chain
       '@librt/config': link:../../lib/config
+      '@librt/storage': link:../../lib/storage
       '@librt/ui': link:../../lib/ui
       '@oclif/core': 1.6.1
       '@oclif/plugin-help': 5.1.12
@@ -141,7 +142,6 @@ importers:
       bn.js: 5.2.0
       ethers: 5.6.1
       ink: 3.2.0_00d6772dea80510e818fd171caaa025a
-      lowdb: 3.0.0
       react: 17.0.2
 
   lib/chain:
@@ -152,6 +152,16 @@ importers:
 
   lib/eslint:
     specifiers: {}
+
+  lib/storage:
+    specifiers:
+      '@librt/config': '*'
+      keyvaluestorage: ^0.7.1
+      node-json-db: ^1.5.0
+    dependencies:
+      '@librt/config': link:../config
+      keyvaluestorage: 0.7.1
+      node-json-db: 1.5.0
 
   lib/ui:
     specifiers:
@@ -5381,13 +5391,6 @@ packages:
       get-func-name: 2.0.0
     dev: true
 
-  /lowdb/3.0.0:
-    resolution: {integrity: sha512-9KZRulmIcU8fZuWiaM0d5e2/nPnrFyXkeXVpqT+MJS+vgbgOf1EbtvgQmba8HwUFgDl1oeZR6XqEJnkJmQdKmg==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
-    dependencies:
-      steno: 2.1.0
-    dev: false
-
   /lru-cache/5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
     dependencies:
@@ -5726,7 +5729,6 @@ packages:
     resolution: {integrity: sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==}
     engines: {node: '>=10'}
     hasBin: true
-    dev: true
 
   /mnemonist/0.38.5:
     resolution: {integrity: sha512-bZTFT5rrPKtPJxj8KSV0WkPyNxl72vQepqqVUAW2ARUpUSF2qXMB6jZj7hW5/k7C1rtpzqbD/IIbJwLXUjCHeg==}
@@ -5883,6 +5885,12 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /node-json-db/1.5.0:
+    resolution: {integrity: sha512-nDD+NgmKE5gxhC9d/MNUmm4NjzKnPRN7uIG6Z167+SVfK2vEVTiKw9ca05/6PLxQAUFP3VOL86K5nPsapFP94w==}
+    dependencies:
+      mkdirp: 1.0.4
+    dev: false
 
   /nopt/5.0.0:
     resolution: {integrity: sha512-Tbj67rffqceeLpcRXrT7vKAN8CwfPeIBgM7E6iBkmKLV7bEMwpGgYLGv0jACUsECaa/vuxP0IjEont6umdMgtQ==}
@@ -7329,11 +7337,6 @@ packages:
     resolution: {integrity: sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==}
     engines: {node: '>= 0.8'}
     dev: true
-
-  /steno/2.1.0:
-    resolution: {integrity: sha512-mauOsiaqTNGFkWqIfwcm3y/fq+qKKaIWf1vf3ocOuTdco9XoHCO2AGF1gFYXuZFSWuP38Q8LBHBGJv2KnJSXyA==}
-    engines: {node: ^14.13.1 || >=16.0.0}
-    dev: false
 
   /strict-uri-encode/2.0.0:
     resolution: {integrity: sha1-ucczDHBChi9rFC3CdLvMWGbONUY=}
