@@ -19,7 +19,8 @@
     "react": "^17.0.2",
     "@librt/chain": "*",
     "@librt/config": "*",
-    "@librt/ui": "*"
+    "@librt/ui": "*",
+    "@librt/storage": "*"
   },
   "engines": {
     "node": ">=16.0.0"

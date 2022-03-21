@@ -21,6 +21,7 @@ import { SessionTypes } from "@walletconnect/types";
 import EventEmitter from "node:events";
 import { truncateAddress } from "@services/common";
 import { Chain } from "@librt/chain";
+import { KeyValueStorage } from "@librt/storage";
 
 const CLI_EVENT_SESSION_REVIEW_APPROVED = "session.review.approved";
 const CLI_EVENT_SESSION_REVIEW_DENIED = "session.review.denied";
@@ -350,11 +351,21 @@ const SegmentSessionException = ({
   );
 };
 
-const PairConnect = ({ uri }: { uri: string }) => {
+const PairConnect = ({
+  storage,
+  uri,
+}: {
+  storage: KeyValueStorage;
+  uri: string;
+}) => {
   // @todo Remove and gracefully exit on CTRL-C.
   useForceProcessExit();
 
-  const { client: wc } = useWCClient({ exceptionHandler: cliCatchException });
+  const { client: wc } = useWCClient({
+    storage,
+    exceptionHandler: cliCatchException,
+  });
+
   const [components, setComponents] = useState<React.ReactNode[]>([]);
 
   useEffect(() => {
@@ -474,11 +485,12 @@ export default class PairConnectCommand extends Command {
 
   async run(): Promise<void> {
     const { flags } = await this.parse(PairConnectCommand);
+    const storage = new KeyValueStorage();
 
     render(
       <>
         <Layout>
-          <PairConnect uri={flags.uri} />
+          <PairConnect storage={storage} uri={flags.uri} />
         </Layout>
       </>
     );

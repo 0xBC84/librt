@@ -30,6 +30,7 @@ USAGE
 * [`librt-wallet account:list`](#librt-wallet-accountlist)
 * [`librt-wallet help [COMMAND]`](#librt-wallet-help-command)
 * [`librt-wallet pair:connect`](#librt-wallet-pairconnect)
+* [`librt-wallet pair:list`](#librt-wallet-pairlist)
 
 ## `librt-wallet account:list`
 
@@ -77,5 +78,15 @@ DESCRIPTION
 
 EXAMPLES
   $ wallet pair:connect --uri=<uri>
+```
+
+## `librt-wallet pair:list`
+
+```
+USAGE
+  $ librt-wallet pair:list
+
+EXAMPLES
+  $ wallet pair:list
 ```
 <!-- commandsstop -->

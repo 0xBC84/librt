@@ -4,6 +4,7 @@ import { ethers } from "ethers";
 import { getConfig } from "@librt/config";
 import { useEffect, useState } from "react";
 import WalletConnectClient from "@walletconnect/client";
+import { KeyValueStorage } from "@librt/storage";
 
 type WalletProvider = ethers.Wallet | unknown;
 
@@ -79,8 +80,10 @@ export const getChainByWCId = (chain: string) => {
 
 export const useWCClient = ({
   exceptionHandler,
+  storage,
 }: {
-  exceptionHandler: (e: Error) => void;
+  exceptionHandler?: (e: Error) => void;
+  storage: KeyValueStorage;
 }) => {
   const { wallet } = getConfig();
   const [client, setClient] = useState<WalletConnectClient | null>(null);
@@ -91,10 +94,11 @@ export const useWCClient = ({
       projectId: wallet.walletConnect.projectId,
       relayUrl: wallet.walletConnect.relayUrl,
       metadata: wallet.walletConnect.metadata,
+      storage,
     })
       .then((wc) => setClient(wc))
       .catch(exceptionHandler);
-  }, [exceptionHandler, wallet]);
+  }, [exceptionHandler, wallet, storage]);
 
   return { client };
 };
