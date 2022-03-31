@@ -2,5 +2,5 @@
 
 . "$(dirname "$0")/_/husky.sh"
 
-docker-compose run --rm --no-TTY node yarn build
-docker-compose run --rm --no-TTY node yarn lint
+docker-compose run --rm --no-TTY node pnpm build
+docker-compose run --rm --no-TTY node pnpm lint
