@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Command, Flags } from "@oclif/core";
 import { Box, render, Text, useInput } from "ink";
 import {
-  Done,
   Error,
   Indicator,
   Info,
@@ -10,21 +9,23 @@ import {
   useForceProcessExit,
   useIndicator,
 } from "@librt/ui";
-import WalletConnectClient, { CLIENT_EVENTS } from "@walletconnect/client";
 import {
   Account,
   getChainByWCId,
   getAccounts,
   useWCClient,
 } from "@services/blockchain";
-import { SessionTypes } from "@walletconnect/types";
+import { IEngine, ISignClient, SignClientTypes } from "@walletconnect/types";
 import EventEmitter from "node:events";
 import { truncateAddress } from "@services/common";
 import { Chain } from "@librt/chain";
 import { KeyValueStorage } from "@librt/storage";
 
+type SessionApprovalResponse = Awaited<ReturnType<IEngine["approve"]>>;
+
 const CLI_EVENT_SESSION_REVIEW_APPROVED = "session.review.approved";
 const CLI_EVENT_SESSION_REVIEW_DENIED = "session.review.denied";
+const CLI_EVENT_SESSION_APPROVED = "session.approved";
 const CLI_EVENT_EXCEPTION = "exception";
 
 const cli = new EventEmitter();
@@ -32,22 +33,35 @@ const cliCatchException = (error: any) => {
   cli.emit(CLI_EVENT_EXCEPTION, error.message);
 };
 
+// @todo Throw error if networks not found.
 const SessionApproval = ({
   onApproved,
   onDenied,
+  proposal,
 }: {
   onApproved: (accounts: Account[]) => void;
   onDenied: () => void;
+  proposal: SignClientTypes.EventArguments["session_proposal"];
 }) => {
   let isComplete = false;
   const accounts = getAccounts();
   const [selected, setSelected] = useState(0);
   const [approved, setApproved] = useState<number[]>([]);
 
-  const accountList = accounts.map((wallet) => ({
-    address: wallet.address,
-    tags: [wallet.name, wallet.chain.chain, wallet.chain.name].join(", "),
-  }));
+  // @todo Suport multiple namespaces.
+  // @todo Throw error if namespace not found.
+  const namespace = proposal.params.requiredNamespaces.eip155;
+
+  // @todo Filter any accounts not on proposal
+  const accountList = accounts
+    .filter((account) => {
+      const chain = [account.protocol, account.network].join(":");
+      return namespace.chains.includes(chain);
+    })
+    .map((wallet) => ({
+      address: wallet.address,
+      tags: [wallet.name, wallet.chain.chain, wallet.chain.name].join(", "),
+    }));
 
   const isSelected = (i: number) => {
     return i === selected;
@@ -132,15 +146,23 @@ const SessionApproval = ({
   );
 };
 
-const SessionInfo = ({ proposal }: { proposal: SessionTypes.Proposal }) => {
+const SessionInfo = ({
+  proposal,
+}: {
+  proposal: SignClientTypes.EventArguments["session_proposal"];
+}) => {
   const labelWidth = 15;
-  const metadata = proposal.proposer.metadata;
+  const metadata = proposal.params.proposer.metadata;
+
+  // @todo Support multiple namespaces.
+  // @todo Throw error if not found.
+  const namespace = proposal.params.requiredNamespaces.eip155;
 
   const chains: Chain[] = [];
   const chainsUnsupported: string[] = [];
-  const permissions = Object.values(proposal.permissions.jsonrpc.methods) || [];
+  const permissions = Object.values(namespace.methods) || [];
 
-  for (const chain of proposal.permissions.blockchain.chains) {
+  for (const chain of namespace.chains) {
     try {
       const chainData = getChainByWCId(chain);
       if (chainData) chains.push(chainData);
@@ -187,7 +209,9 @@ const SessionInfo = ({ proposal }: { proposal: SessionTypes.Proposal }) => {
           <Text color="grey">relay:</Text>
         </Box>
         <Box>
-          <Text>{proposal.relay.protocol}</Text>
+          {proposal.params.relays.map((relay) => (
+            <Text key={relay.protocol}>{relay.protocol}</Text>
+          ))}
         </Box>
       </Box>
       <Box flexDirection="row">
@@ -204,13 +228,7 @@ const SessionInfo = ({ proposal }: { proposal: SessionTypes.Proposal }) => {
   );
 };
 
-const SegmentPairProposal = ({
-  wc,
-  uri,
-}: {
-  wc: WalletConnectClient;
-  uri: string;
-}) => {
+const SegmentPairProposal = ({ wc, uri }: { wc: ISignClient; uri: string }) => {
   const indicator = useIndicator({
     onTimeout: () => {
       cli.emit(CLI_EVENT_EXCEPTION, "request timed out");
@@ -229,26 +247,98 @@ const SegmentPairProposal = ({
   );
 };
 
-const SegmentSessionProposal = ({ wc }: { wc: WalletConnectClient }) => {
+const SegmentSessionApproval = ({
+  wc,
+  proposal,
+  accounts,
+}: {
+  wc: ISignClient;
+  proposal: SignClientTypes.EventArguments["session_proposal"];
+  accounts: Account[];
+}) => {
+  const methods = [
+    "eth_requestAccounts",
+    "eth_accounts",
+    "eth_chainId",
+    "eth_sendTransaction",
+    "eth_signTransaction",
+    "eth_sign",
+    "eth_signTypedData",
+    "personal_sign",
+  ];
+
+  const events = ["chainChanged", "accountsChanged"];
+
   const indicator = useIndicator({
     onTimeout: () => {
       cli.emit(CLI_EVENT_EXCEPTION, "request timed out");
     },
     onLoad: () => {
-      return new Promise((resolve) => {
-        wc.on(CLIENT_EVENTS.session.proposal, () => {
-          resolve(null);
+      return wc
+        .approve({
+          id: proposal.id,
+          namespaces: {
+            eip155: {
+              accounts: accounts.map((account) => account.id),
+              events,
+              methods,
+            },
+          },
+        })
+        .then((result) => {
+          cli.emit(CLI_EVENT_SESSION_APPROVED, result);
         });
-      });
     },
   });
 
   return (
     <Indicator
-      key="do-session-proposal"
-      label="waiting for session proposals"
       indicator={indicator}
+      label="approving session"
+      key="do-pair-proposal"
     />
+  );
+};
+
+const SegmentSessionAcknowledge = ({
+  response,
+}: {
+  response: SessionApprovalResponse;
+}) => {
+  const indicator = useIndicator({
+    onTimeout: () => {
+      cli.emit(CLI_EVENT_EXCEPTION, "request timed out");
+    },
+    onLoad: () => {
+      return response.acknowledged().catch(() => {
+        cli.emit(CLI_EVENT_EXCEPTION, "acknowledge failed");
+      });
+    },
+  });
+
+  return (
+    <>
+      <Indicator
+        key="do-session-proposal"
+        label="acknowledging session"
+        indicator={indicator}
+      />
+      <Box>
+        <Text>
+          <Info /> subscribed to topic: {response.topic}
+        </Text>
+      </Box>
+    </>
+  );
+};
+
+const SegmentSessionPing = () => {
+  return (
+    <Box>
+      <Text>
+        <Info /> received ping
+      </Text>
+    </Box>
   );
 };
 
@@ -257,7 +347,7 @@ const SegmentSessionReview = ({
   proposal,
 }: {
   cli: EventEmitter;
-  proposal: SessionTypes.Proposal;
+  proposal: SignClientTypes.EventArguments["session_proposal"];
 }) => {
   const doSessionApproved = (accounts: Account[]) => {
     cli.emit(CLI_EVENT_SESSION_REVIEW_APPROVED, proposal, accounts);
@@ -277,53 +367,12 @@ const SegmentSessionReview = ({
       </Box>
       <Box marginTop={1} marginBottom={1}>
         <SessionApproval
+          proposal={proposal}
           onApproved={doSessionApproved}
           onDenied={doSessionDenied}
         />
       </Box>
     </>
-  );
-};
-
-const SegmentSessionApproval = ({
-  wc,
-  proposal,
-  accounts,
-}: {
-  wc: WalletConnectClient;
-  proposal: SessionTypes.Proposal;
-  accounts: Account[];
-}) => {
-  const response = {
-    state: {
-      accounts: accounts.map((account) => account.id),
-    },
-  };
-
-  const indicator = useIndicator({
-    timeout: 30_000,
-    onTimeout: () => {
-      cli.emit(CLI_EVENT_EXCEPTION, "request timed out");
-    },
-    onLoad: () => {
-      return wc.approve({ proposal, response }).catch(cliCatchException);
-    },
-  });
-
-  return (
-    <Box>
-      <Indicator label="waiting for session approval" indicator={indicator} />
-    </Box>
-  );
-};
-
-const SegmentSessionApproved = () => {
-  return (
-    <Box>
-      <Text>
-        <Done /> session created
-      </Text>
-    </Box>
   );
 };
 
@@ -378,26 +427,15 @@ const PairConnect = ({
 
   useEffect(() => {
     if (wc) {
-      wc.once(CLIENT_EVENTS.pairing.created, () => {
-        setComponents((components: React.ReactNode[]) => [
-          ...components,
-          <SegmentSessionProposal wc={wc} key="do-session-proposal" />,
-        ]);
-      });
-    }
-  }, [wc]);
-
-  useEffect(() => {
-    if (wc) {
-      wc.once(
-        CLIENT_EVENTS.session.proposal,
-        (proposal: SessionTypes.Proposal) => {
+      wc.events.once(
+        "session_proposal",
+        (proposal: SignClientTypes.EventArguments["session_proposal"]) => {
           setComponents((components: React.ReactNode[]) => [
             ...components,
             <SegmentSessionReview
-              key="do-session-reviewed"
               cli={cli}
               proposal={proposal}
+              key="do-session-proposal"
             />,
           ]);
         }
@@ -409,7 +447,10 @@ const PairConnect = ({
     if (wc) {
       cli.once(
         CLI_EVENT_SESSION_REVIEW_APPROVED,
-        (proposal: SessionTypes.Proposal, accounts: Account[]) => {
+        (
+          proposal: SignClientTypes.EventArguments["session_proposal"],
+          accounts: Account[]
+        ) => {
           setComponents((components: React.ReactNode[]) => [
             ...components,
             <SegmentSessionApproval
@@ -426,16 +467,33 @@ const PairConnect = ({
 
   useEffect(() => {
     if (wc) {
-      wc.once(CLIENT_EVENTS.session.created, () => {
-        setComponents((components: React.ReactNode[]) => [
-          ...components,
-          <SegmentSessionApproved key="session-approved" />,
-        ]);
+      cli.once(
+        CLI_EVENT_SESSION_APPROVED,
+        (response: SessionApprovalResponse) => {
+          setComponents((components: React.ReactNode[]) => [
+            ...components,
+            <SegmentSessionAcknowledge
+              key="do-session-acknowledge"
+              response={response}
+            />,
+          ]);
+        }
+      );
+    }
+  }, [wc]);
 
-        setTimeout(() => {
-          process.exit();
-        }, 500);
-      });
+  useEffect(() => {
+    if (wc) {
+      wc.events.on(
+        "session_ping",
+        (response: SignClientTypes.EventArguments["session_ping"]) => {
+          const key = "do-session-ping-" + response.id;
+          setComponents((components: React.ReactNode[]) => [
+            ...components,
+            <SegmentSessionPing key={key} />,
+          ]);
+        }
+      );
     }
   }, [wc]);
 
@@ -468,6 +526,7 @@ const PairConnect = ({
   return <>{components}</>;
 };
 
+// @todo Disconnect.
 export default class PairConnectCommand extends Command {
   static description = "Create a pair connection.";
 

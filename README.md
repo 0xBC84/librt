@@ -13,10 +13,11 @@ docker-compose run --rm node pnpm run test
 docker-compose run --rm node pnpm run dev
 docker-compose run --rm node pnpm run deploy
 
-# dApps.
-
 # Hardhat.
 docker-compose up -d hardhat
+
+# WC Relay.
+docker-compose up -d relay
 ```
 
 ## Local Environment

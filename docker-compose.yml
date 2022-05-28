@@ -27,3 +27,18 @@ services:
       - ./:/srv
       - ./.docker/node/.cache:/home/node/.cache
       - ./.docker/node/.config:/home/node/.config
+  relay:
+    image: "walletconnect/relay-server:v2.0-dev"
+    environment:
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "5000:5000"
+    depends_on:
+      - redis
+  redis:
+    image: "redis:alpine"
+    command: redis-server
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./.docker/redis/data:/var/lib/redis

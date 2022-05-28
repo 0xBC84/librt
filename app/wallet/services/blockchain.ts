@@ -3,8 +3,9 @@ import { Chain, getSupportedChainById } from "@librt/chain";
 import { ethers } from "ethers";
 import { getConfig } from "@librt/config";
 import { useEffect, useState } from "react";
-import WalletConnectClient from "@walletconnect/client";
+import { SignClient } from "@walletconnect/sign-client";
 import { KeyValueStorage } from "@librt/storage";
+import { ISignClient } from "@walletconnect/types";
 
 type WalletProvider = ethers.Wallet | unknown;
 
@@ -14,6 +15,8 @@ export type Account = {
   chain: Chain;
   name: string;
   id: string;
+  network: string;
+  protocol: string;
   address: string;
 };
 
@@ -61,8 +64,10 @@ export const getAccounts = (): Account[] => {
       chain,
       name: account.name,
       node: account.node,
-      id: ["eip155", chain.chainId, wallet.address].join(":"),
+      protocol: "eip155",
+      network: chain.networkId.toString(),
       address: wallet.address,
+      id: ["eip155", chain.chainId, wallet.address].join(":"),
     });
   }
 
@@ -70,7 +75,7 @@ export const getAccounts = (): Account[] => {
 };
 
 export const getChainByWCId = (chain: string) => {
-  if (!isValidChainId(chain)) {
+  if (!isValidChainId(chain, false)) {
     throw new Error("invalid chain");
   }
 
@@ -86,15 +91,16 @@ export const useWCClient = ({
   storage: KeyValueStorage;
 }) => {
   const { wallet } = getConfig();
-  const [client, setClient] = useState<WalletConnectClient | null>(null);
+  const [client, setClient] = useState<ISignClient | null>(null);
 
+  // @todo Migrate storage and controller
   useEffect(() => {
-    WalletConnectClient.init({
-      controller: true,
+    SignClient.init({
       projectId: wallet.walletConnect.projectId,
       relayUrl: wallet.walletConnect.relayUrl,
       metadata: wallet.walletConnect.metadata,
-      storage,
+      // controller: true,
+      // storage,
     })
       .then((wc) => setClient(wc))
       .catch(exceptionHandler);

@@ -1,7 +1,8 @@
-import WalletConnectClient, { CLIENT_EVENTS } from "@walletconnect/client";
-import { PairingTypes } from "@walletconnect/types";
 import { Command } from "@oclif/core";
-import readline from "node:readline";
+import * as readline from "node:readline";
+import { SignClient, SIGN_CLIENT_EVENTS } from "@walletconnect/sign-client";
+import { SignClientTypes } from "@walletconnect/types/dist/cjs/sign-client/client";
+// import readline from "node:readline";
 
 export default class Example extends Command {
   static description = "Example.";
@@ -16,9 +17,9 @@ export default class Example extends Command {
     readline.emitKeypressEvents(process.stdin);
 
     // @todo Get `projectId` from getConfig()
-    const client = await WalletConnectClient.init({
+    const client = await SignClient.init({
       projectId: "004cbcf1b212d7e8786473c4cd8073cc",
-      relayUrl: "wss://relay.walletconnect.com",
+      relayUrl: "ws://relay:5000",
       metadata: {
         name: "librt",
         description: "librt",
@@ -27,52 +28,49 @@ export default class Example extends Command {
       },
     });
 
-    const createSession = (pairing?: { topic: string }) => {
-      client.connect({
-        pairing,
-        permissions: {
-          blockchain: {
-            chains: ["eip155:42"],
-          },
-          jsonrpc: {
-            methods: [
-              "eth_sendTransaction",
-              "personal_sign",
-              "eth_signTypedData",
-            ],
-          },
+    const { uri, approval } = await client.connect({
+      requiredNamespaces: {
+        eip155: {
+          chains: ["eip155:42"],
+          methods: [
+            "eth_requestAccounts",
+            "eth_accounts",
+            "eth_chainId",
+            "eth_sendTransaction",
+            "eth_signTransaction",
+            "eth_sign",
+            "eth_signTypedData",
+            "personal_sign",
+          ],
+          events: ["chainChanged", "accountsChanged"],
         },
-      });
-    };
+      },
+      relays: [{ protocol: "waku" }],
+    });
 
-    createSession();
+    this.log(uri);
+    const connection = await approval();
+
+    this.log("connection approved, setting up handlers...");
+    this.log("topic:", connection.topic);
+
+    setInterval(() => {
+      this.log("sending ping");
+      client.ping({ topic: connection.topic });
+    }, 2000);
 
     return new Promise(() => {
-      client.on(
-        CLIENT_EVENTS.pairing.proposal,
-        async (proposal: PairingTypes.Proposal) => {
-          this.log("pairing proposed");
-          this.log(JSON.stringify(proposal, null, "  "));
-        }
-      );
+      client.on(SIGN_CLIENT_EVENTS.session_ping, () => {
+        this.log("received ping");
+      });
 
-      client.on(
-        CLIENT_EVENTS.pairing.created,
-        async (proposal: PairingTypes.Created) => {
-          this.log("pairing created");
-          this.log(JSON.stringify(proposal, null, "  "));
-          // const pairing = { topic: proposal.topic };
-          // createSession(pairing);
-        }
-      );
-
-      client.on(CLIENT_EVENTS.session.created, () => {
+      client.on(SIGN_CLIENT_EVENTS.session_delete, () => {
+        this.log("received disconnect");
         process.exit();
       });
 
       process.stdin.on("keypress", () => {
-        // eslint-disable-next-line no-console
-        console.log("press");
+        this.log("press");
         process.exit();
       });
     });
