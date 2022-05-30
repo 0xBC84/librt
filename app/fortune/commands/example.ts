@@ -1,8 +1,6 @@
 import { Command } from "@oclif/core";
 import * as readline from "node:readline";
 import { SignClient, SIGN_CLIENT_EVENTS } from "@walletconnect/sign-client";
-import { SignClientTypes } from "@walletconnect/types/dist/cjs/sign-client/client";
-// import readline from "node:readline";
 
 export default class Example extends Command {
   static description = "Example.";
