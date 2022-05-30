@@ -1,4 +1,5 @@
 FROM node:16
+ENV SHELL /bin/bash
 RUN apt-get update && apt-get install -y curl git bash fish
-RUN curl -f https://get.pnpm.io/v7.1.js | node - add --global pnpm
+RUN npm install -g pnpm
 USER node
