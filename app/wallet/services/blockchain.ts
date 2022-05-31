@@ -4,8 +4,8 @@ import { ethers } from "ethers";
 import { getConfig } from "@librt/config";
 import { useEffect, useState } from "react";
 import { SignClient } from "@walletconnect/sign-client";
-import { KeyValueStorage } from "@librt/storage";
 import { ISignClient } from "@walletconnect/types";
+import path from "node:path";
 
 type WalletProvider = ethers.Wallet | unknown;
 
@@ -85,24 +85,29 @@ export const getChainByWCId = (chain: string) => {
 
 export const useWCClient = ({
   exceptionHandler,
-  storage,
 }: {
   exceptionHandler?: (e: Error) => void;
-  storage: KeyValueStorage;
 }) => {
-  const { wallet } = getConfig();
+  const { wallet, storage } = getConfig();
+  const dbPath = storage.path.replace("$HOME", process.env.HOME || "");
+  const db = path.resolve(dbPath);
+
   const [client, setClient] = useState<ISignClient | null>(null);
 
-  // @todo Migrate storage and controller
   useEffect(() => {
     SignClient.init({
+      metadata: wallet.walletConnect.metadata,
       projectId: wallet.walletConnect.projectId,
       relayUrl: wallet.walletConnect.relayUrl,
-      metadata: wallet.walletConnect.metadata,
-      // controller: true,
-      // storage,
+      storageOptions: {
+        database: db,
+      },
     })
-      .then((wc) => setClient(wc))
+      .then((wc) => {
+        // @todo Hack until https://github.com/WalletConnect/walletconnect-monorepo/pull/1114
+        // wc.core.storage = storage;
+        setClient(wc);
+      })
       .catch(exceptionHandler);
   }, [exceptionHandler, wallet, storage]);
 

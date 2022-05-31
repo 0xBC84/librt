@@ -19,7 +19,6 @@ import { IEngine, ISignClient, SignClientTypes } from "@walletconnect/types";
 import EventEmitter from "node:events";
 import { truncateAddress } from "@services/common";
 import { Chain } from "@librt/chain";
-import { KeyValueStorage } from "@librt/storage";
 
 type SessionApprovalResponse = Awaited<ReturnType<IEngine["approve"]>>;
 
@@ -400,18 +399,11 @@ const SegmentSessionException = ({
   );
 };
 
-const PairConnect = ({
-  storage,
-  uri,
-}: {
-  storage: KeyValueStorage;
-  uri: string;
-}) => {
+const PairConnect = ({ uri }: { uri: string }) => {
   // @todo Remove and gracefully exit on CTRL-C.
   useForceProcessExit();
 
   const { client: wc } = useWCClient({
-    storage,
     exceptionHandler: cliCatchException,
   });
 
@@ -544,12 +536,11 @@ export default class PairConnectCommand extends Command {
 
   async run(): Promise<void> {
     const { flags } = await this.parse(PairConnectCommand);
-    const storage = new KeyValueStorage();
 
     render(
       <>
         <Layout>
-          <PairConnect storage={storage} uri={flags.uri} />
+          <PairConnect uri={flags.uri} />
         </Layout>
       </>
     );

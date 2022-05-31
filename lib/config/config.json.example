@@ -1,6 +1,6 @@
 {
   "storage": {
-    "uri": "$HOME/.config/librt/storage.json"
+    "path": "$HOME/.config/librt/storage.db"
   },
   "accounts": [
     {

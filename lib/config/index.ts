@@ -9,7 +9,7 @@ export type Account = {
 
 export type Config = {
   storage: {
-    uri: string;
+    path: string;
   };
   accounts: Account[];
   wallet: {
