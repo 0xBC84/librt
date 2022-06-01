@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Command, Flags } from "@oclif/core";
 import { Box, render, Text, useInput } from "ink";
 import {
+  Done,
   Error,
   Indicator,
   Info,
@@ -25,6 +26,7 @@ type SessionApprovalResponse = Awaited<ReturnType<IEngine["approve"]>>;
 const CLI_EVENT_SESSION_REVIEW_APPROVED = "session.review.approved";
 const CLI_EVENT_SESSION_REVIEW_DENIED = "session.review.denied";
 const CLI_EVENT_SESSION_APPROVED = "session.approved";
+const CLI_EVENT_SESSION_SUCCESS = "session.success";
 const CLI_EVENT_EXCEPTION = "exception";
 
 const cli = new EventEmitter();
@@ -301,17 +303,22 @@ const SegmentSessionApproval = ({
 
 const SegmentSessionAcknowledge = ({
   response,
+  cli,
 }: {
   response: SessionApprovalResponse;
+  cli: EventEmitter;
 }) => {
   const indicator = useIndicator({
     onTimeout: () => {
       cli.emit(CLI_EVENT_EXCEPTION, "request timed out");
     },
     onLoad: () => {
-      return response.acknowledged().catch(() => {
-        cli.emit(CLI_EVENT_EXCEPTION, "acknowledge failed");
-      });
+      return response
+        .acknowledged()
+        .then(() => cli.emit(CLI_EVENT_SESSION_SUCCESS))
+        .catch(() => {
+          cli.emit(CLI_EVENT_EXCEPTION, "acknowledge failed");
+        });
     },
   });
 
@@ -322,22 +329,7 @@ const SegmentSessionAcknowledge = ({
         label="acknowledging session"
         indicator={indicator}
       />
-      <Box>
-        <Text>
-          <Info /> subscribed to topic: {response.topic}
-        </Text>
-      </Box>
     </>
-  );
-};
-
-const SegmentSessionPing = () => {
-  return (
-    <Box>
-      <Text>
-        <Info /> received ping
-      </Text>
-    </Box>
   );
 };
 
@@ -380,6 +372,16 @@ const SegmentSessionDenied = () => {
     <Box>
       <Text>
         <Info /> session denied
+      </Text>
+    </Box>
+  );
+};
+
+const SegmentSessionDone = () => {
+  return (
+    <Box>
+      <Text>
+        <Done /> session created
       </Text>
     </Box>
   );
@@ -465,24 +467,10 @@ const PairConnect = ({ uri }: { uri: string }) => {
           setComponents((components: React.ReactNode[]) => [
             ...components,
             <SegmentSessionAcknowledge
+              cli={cli}
               key="do-session-acknowledge"
               response={response}
             />,
-          ]);
-        }
-      );
-    }
-  }, [wc]);
-
-  useEffect(() => {
-    if (wc) {
-      wc.events.on(
-        "session_ping",
-        (response: SignClientTypes.EventArguments["session_ping"]) => {
-          const key = "do-session-ping-" + response.id;
-          setComponents((components: React.ReactNode[]) => [
-            ...components,
-            <SegmentSessionPing key={key} />,
           ]);
         }
       );
@@ -507,6 +495,19 @@ const PairConnect = ({ uri }: { uri: string }) => {
       setComponents((components: React.ReactNode[]) => [
         ...components,
         <SegmentSessionException key="exception" message={message} />,
+      ]);
+
+      setTimeout(() => {
+        process.exit();
+      }, 500);
+    });
+  }, []);
+
+  useEffect(() => {
+    cli.once(CLI_EVENT_SESSION_SUCCESS, () => {
+      setComponents((components: React.ReactNode[]) => [
+        ...components,
+        <SegmentSessionDone key="session-done" />,
       ]);
 
       setTimeout(() => {
