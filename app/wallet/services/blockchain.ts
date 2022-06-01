@@ -104,8 +104,6 @@ export const useWCClient = ({
       },
     })
       .then((wc) => {
-        // @todo Hack until https://github.com/WalletConnect/walletconnect-monorepo/pull/1114
-        // wc.core.storage = storage;
         setClient(wc);
       })
       .catch(exceptionHandler);
