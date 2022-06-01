@@ -34,3 +34,7 @@ LIBRT_NETWORK="localhost"
 docker-compose up hardhat
 docker-compose run --rm node librt...
 ```
+
+## Notes
+
+- Interact with [dApp example](https://react-app.walletconnect.com/)
