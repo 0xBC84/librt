@@ -1,7 +1,0 @@
-{
-  "extends": ["oclif", "oclif-typescript", "librt"],
-  "rules": {
-    "no-process-exit": "off",
-    "unicorn/no-process-exit": "off"
-  }
-}

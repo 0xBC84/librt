@@ -1,9 +1,0 @@
-/dist
-/bin
-/contracts
-/cache
-/artifacts
-/deployments
-/types
-README.md
-hardhat.config.ts
