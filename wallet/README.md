@@ -16,7 +16,7 @@ $ npm install -g @librt/wallet
 $ librt-wallet COMMAND
 running command...
 $ librt-wallet (--version)
-@librt/wallet/0.0.1 linux-arm64 node-v16.14.2
+@librt/wallet/0.0.1 linux-arm64 node-v16.15.0
 $ librt-wallet --help [COMMAND]
 USAGE
   $ librt-wallet COMMAND
@@ -28,9 +28,7 @@ USAGE
 
 <!-- commands -->
 * [`librt-wallet account:list`](#librt-wallet-accountlist)
-* [`librt-wallet help [COMMAND]`](#librt-wallet-help-command)
 * [`librt-wallet pair:connect`](#librt-wallet-pairconnect)
-* [`librt-wallet pair:list`](#librt-wallet-pairlist)
 
 ## `librt-wallet account:list`
 
@@ -41,26 +39,6 @@ USAGE
 EXAMPLES
   $ wallet account:list
 ```
-
-## `librt-wallet help [COMMAND]`
-
-Display help for librt-wallet.
-
-```
-USAGE
-  $ librt-wallet help [COMMAND] [-n]
-
-ARGUMENTS
-  COMMAND  Command to show help for.
-
-FLAGS
-  -n, --nested-commands  Include all nested commands in the output.
-
-DESCRIPTION
-  Display help for librt-wallet.
-```
-
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.12/src/commands/help.ts)_
 
 ## `librt-wallet pair:connect`
 
@@ -78,15 +56,5 @@ DESCRIPTION
 
 EXAMPLES
   $ wallet pair:connect --uri=<uri>
-```
-
-## `librt-wallet pair:list`
-
-```
-USAGE
-  $ librt-wallet pair:list
-
-EXAMPLES
-  $ wallet pair:list
 ```
 <!-- commandsstop -->
