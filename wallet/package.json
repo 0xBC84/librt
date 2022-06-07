@@ -35,8 +35,7 @@
   "oclif": {
     "bin": "librt-wallet",
     "commands": "./dist/commands",
-    "plugins": [
-    ],
+    "plugins": [],
     "topicSeparator": ":",
     "topics": {}
   },
