@@ -29,4 +29,5 @@ LIBRT_NETWORK="localhost"
 
 ## Notes
 
-- Interact with [dApp example](https://react-app.walletconnect.com/)
+- [dApp Example](https://react-app.walletconnect.com/)
+- [Wallet Example](https://react-wallet.walletconnect.com/)
