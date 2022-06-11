@@ -479,7 +479,7 @@ const PairConnect = ({ uri }: { uri: string }) => {
         }, 500);
       });
     }
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     if (socket) {
@@ -494,7 +494,7 @@ const PairConnect = ({ uri }: { uri: string }) => {
         }, 500);
       });
     }
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     if (socket) {
