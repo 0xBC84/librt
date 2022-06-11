@@ -2,14 +2,14 @@
   "private": true,
   "workspaces": [
     "lib/*",
-    "wallet"
+    "app/*"
   ],
   "scripts": {
     "setup": "pnpm install",
     "dev": "pnpm --recursive --parallel dev",
-    "build": "pnpm build:lib && pnpm build:wallet",
+    "build": "pnpm build:lib && pnpm build:app",
     "build:lib": "pnpm run --parallel --filter='./lib/**' build",
-    "build:wallet": "pnpm run --parallel --filter='./wallet' build",
+    "build:app": "pnpm run --parallel --filter='./app/**' build",
     "lint": "pnpm run --parallel lint",
     "pack": "pnpm run --parallel pack",
     "prepare": "husky install"
