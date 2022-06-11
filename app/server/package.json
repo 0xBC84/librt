@@ -1,0 +1,17 @@
+{
+  "name": "@librt/server",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "nodemon index.ts"
+  },
+  "dependencies": {
+    "@librt/chain": "*",
+    "@librt/config": "*",
+    "@librt/ui": "*",
+    "@walletconnect/ethereum-provider": "^2.0.0-beta.100",
+    "@walletconnect/sign-client": "^2.0.0-beta.100",
+    "@walletconnect/types": "^2.0.0-beta.100",
+    "@walletconnect/utils": "^2.0.0-beta.100",
+    "socket.io": "^4.5.1"
+  }
+}

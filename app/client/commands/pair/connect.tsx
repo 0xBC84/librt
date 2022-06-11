@@ -10,29 +10,18 @@ import {
   useForceProcessExit,
   useIndicator,
 } from "@librt/ui";
-import {
-  Account,
-  getChainByWCId,
-  getAccounts,
-  useWCClient,
-} from "@services/blockchain";
-import { IEngine, ISignClient, SignClientTypes } from "@walletconnect/types";
+import { Account, getChainByWCId, getAccounts } from "@services/blockchain";
+import { SignClientTypes } from "@walletconnect/types";
 import EventEmitter from "node:events";
 import { truncateAddress } from "@services/common";
 import { Chain } from "@librt/chain";
-
-type SessionApprovalResponse = Awaited<ReturnType<IEngine["approve"]>>;
+import { io, Socket } from "socket.io-client";
 
 const CLI_EVENT_SESSION_REVIEW_APPROVED = "session.review.approved";
 const CLI_EVENT_SESSION_REVIEW_DENIED = "session.review.denied";
-const CLI_EVENT_SESSION_APPROVED = "session.approved";
-const CLI_EVENT_SESSION_SUCCESS = "session.success";
 const CLI_EVENT_EXCEPTION = "exception";
 
 const cli = new EventEmitter();
-const cliCatchException = (error: any) => {
-  cli.emit(CLI_EVENT_EXCEPTION, error.message);
-};
 
 // @todo Throw error if networks not found.
 const SessionApproval = ({
@@ -229,13 +218,22 @@ const SessionInfo = ({
   );
 };
 
-const SegmentPairProposal = ({ wc, uri }: { wc: ISignClient; uri: string }) => {
+const SegmentPairProposal = ({
+  socket,
+  uri,
+}: {
+  socket: Socket;
+  uri: string;
+}) => {
   const indicator = useIndicator({
     onTimeout: () => {
       cli.emit(CLI_EVENT_EXCEPTION, "request timed out");
     },
     onLoad: () => {
-      return wc.pair({ uri }).catch(cliCatchException);
+      return new Promise((resolve) => {
+        socket.emit("sign_client:pair", uri);
+        socket.on("sign_client:pair_ok", () => resolve(true));
+      });
     },
   });
 
@@ -249,11 +247,11 @@ const SegmentPairProposal = ({ wc, uri }: { wc: ISignClient; uri: string }) => {
 };
 
 const SegmentSessionApproval = ({
-  wc,
+  socket,
   proposal,
   accounts,
 }: {
-  wc: ISignClient;
+  socket: Socket;
   proposal: SignClientTypes.EventArguments["session_proposal"];
   accounts: Account[];
 }) => {
@@ -275,8 +273,8 @@ const SegmentSessionApproval = ({
       cli.emit(CLI_EVENT_EXCEPTION, "request timed out");
     },
     onLoad: () => {
-      return wc
-        .approve({
+      return new Promise((resolve) => {
+        const data = {
           id: proposal.id,
           namespaces: {
             eip155: {
@@ -285,10 +283,11 @@ const SegmentSessionApproval = ({
               methods,
             },
           },
-        })
-        .then((result) => {
-          cli.emit(CLI_EVENT_SESSION_APPROVED, result);
-        });
+        };
+
+        socket.emit("sign_client:session_approve", JSON.stringify(data));
+        socket.on("sign_client:session_approve_ok", () => resolve(true));
+      });
     },
   });
 
@@ -298,38 +297,6 @@ const SegmentSessionApproval = ({
       label="approving session"
       key="do-pair-proposal"
     />
-  );
-};
-
-const SegmentSessionAcknowledge = ({
-  response,
-  cli,
-}: {
-  response: SessionApprovalResponse;
-  cli: EventEmitter;
-}) => {
-  const indicator = useIndicator({
-    onTimeout: () => {
-      cli.emit(CLI_EVENT_EXCEPTION, "request timed out");
-    },
-    onLoad: () => {
-      return response
-        .acknowledged()
-        .then(() => cli.emit(CLI_EVENT_SESSION_SUCCESS))
-        .catch(() => {
-          cli.emit(CLI_EVENT_EXCEPTION, "acknowledge failed");
-        });
-    },
-  });
-
-  return (
-    <>
-      <Indicator
-        key="do-session-proposal"
-        label="acknowledging session"
-        indicator={indicator}
-      />
-    </>
   );
 };
 
@@ -401,28 +368,67 @@ const SegmentSessionException = ({
   );
 };
 
+const SegmentConnect = ({
+  onConnect,
+}: {
+  onConnect: (socket: Socket) => void;
+}) => {
+  const indicator = useIndicator({
+    onTimeout: () => {
+      cli.emit(CLI_EVENT_EXCEPTION, "request timed out");
+    },
+    onLoad: () => {
+      return new Promise((resolve) => {
+        const _socket = io("ws://node:3000");
+        _socket.on("sign_client:ready", () => {
+          resolve(true);
+          onConnect(_socket);
+        });
+      });
+    },
+  });
+
+  return (
+    <Indicator indicator={indicator} label="connecting" key="do-connects" />
+  );
+};
+
 const PairConnect = ({ uri }: { uri: string }) => {
   // @todo Remove and gracefully exit on CTRL-C.
   useForceProcessExit();
 
-  const { client: wc } = useWCClient({
-    exceptionHandler: cliCatchException,
-  });
-
   const [components, setComponents] = useState<React.ReactNode[]>([]);
+  const [socket, setSocket] = useState<Socket | undefined>();
 
   useEffect(() => {
-    if (wc) {
-      setComponents([
-        <SegmentPairProposal key="do-pair-proposal" wc={wc} uri={uri} />,
+    setComponents((components: React.ReactNode[]) => [
+      ...components,
+      <SegmentConnect
+        key="do-connect"
+        onConnect={(socket) => {
+          setSocket(socket);
+        }}
+      />,
+    ]);
+  }, []);
+
+  useEffect(() => {
+    if (socket) {
+      setComponents((components: React.ReactNode[]) => [
+        ...components,
+        <SegmentPairProposal
+          key="do-pair-proposal"
+          socket={socket}
+          uri={uri}
+        />,
       ]);
     }
-  }, [wc, uri]);
+  }, [uri, socket]);
 
   useEffect(() => {
-    if (wc) {
-      wc.events.once(
-        "session_proposal",
+    if (socket) {
+      socket.once(
+        "sign_client:session_proposal",
         (proposal: SignClientTypes.EventArguments["session_proposal"]) => {
           setComponents((components: React.ReactNode[]) => [
             ...components,
@@ -435,10 +441,11 @@ const PairConnect = ({ uri }: { uri: string }) => {
         }
       );
     }
-  }, [wc]);
+  }, [socket]);
 
   useEffect(() => {
-    if (wc) {
+    // @todo Remove in favour of socket event
+    if (socket) {
       cli.once(
         CLI_EVENT_SESSION_REVIEW_APPROVED,
         (
@@ -449,7 +456,7 @@ const PairConnect = ({ uri }: { uri: string }) => {
             ...components,
             <SegmentSessionApproval
               key="do-session-approval"
-              wc={wc}
+              socket={socket}
               proposal={proposal}
               accounts={accounts}
             />,
@@ -457,64 +464,52 @@ const PairConnect = ({ uri }: { uri: string }) => {
         }
       );
     }
-  }, [wc]);
+  }, [socket]);
 
   useEffect(() => {
-    if (wc) {
-      cli.once(
-        CLI_EVENT_SESSION_APPROVED,
-        (response: SessionApprovalResponse) => {
-          setComponents((components: React.ReactNode[]) => [
-            ...components,
-            <SegmentSessionAcknowledge
-              cli={cli}
-              key="do-session-acknowledge"
-              response={response}
-            />,
-          ]);
-        }
-      );
+    if (socket) {
+      cli.once(CLI_EVENT_SESSION_REVIEW_DENIED, () => {
+        setComponents((components: React.ReactNode[]) => [
+          ...components,
+          <SegmentSessionDenied key="session-denied" />,
+        ]);
+
+        setTimeout(() => {
+          process.exit();
+        }, 500);
+      });
     }
-  }, [wc]);
-
-  useEffect(() => {
-    cli.once(CLI_EVENT_SESSION_REVIEW_DENIED, () => {
-      setComponents((components: React.ReactNode[]) => [
-        ...components,
-        <SegmentSessionDenied key="session-denied" />,
-      ]);
-
-      setTimeout(() => {
-        process.exit();
-      }, 500);
-    });
   }, []);
 
   useEffect(() => {
-    cli.on(CLI_EVENT_EXCEPTION, (message: string) => {
-      setComponents((components: React.ReactNode[]) => [
-        ...components,
-        <SegmentSessionException key="exception" message={message} />,
-      ]);
+    if (socket) {
+      cli.on(CLI_EVENT_EXCEPTION, (message: string) => {
+        setComponents((components: React.ReactNode[]) => [
+          ...components,
+          <SegmentSessionException key="exception" message={message} />,
+        ]);
 
-      setTimeout(() => {
-        process.exit();
-      }, 500);
-    });
+        setTimeout(() => {
+          process.exit();
+        }, 500);
+      });
+    }
   }, []);
 
   useEffect(() => {
-    cli.once(CLI_EVENT_SESSION_SUCCESS, () => {
-      setComponents((components: React.ReactNode[]) => [
-        ...components,
-        <SegmentSessionDone key="session-done" />,
-      ]);
+    if (socket) {
+      socket.once("sign_client:session_approve_ok", () => {
+        setComponents((components: React.ReactNode[]) => [
+          ...components,
+          <SegmentSessionDone key="session-done" />,
+        ]);
 
-      setTimeout(() => {
-        process.exit();
-      }, 500);
-    });
-  }, []);
+        setTimeout(() => {
+          process.exit();
+        }, 500);
+      });
+    }
+  }, [socket]);
 
   return <>{components}</>;
 };
@@ -523,7 +518,7 @@ const PairConnect = ({ uri }: { uri: string }) => {
 export default class PairConnectCommand extends Command {
   static description = "Create a pair connection.";
 
-  static examples = [`$ wallet pair:connect --uri=<uri>`];
+  static examples = [`$ librt pair:connect --uri=<uri>`];
 
   static flags = {
     uri: Flags.string({
@@ -537,7 +532,6 @@ export default class PairConnectCommand extends Command {
 
   async run(): Promise<void> {
     const { flags } = await this.parse(PairConnectCommand);
-
     render(
       <>
         <Layout>

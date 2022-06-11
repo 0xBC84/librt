@@ -2,27 +2,15 @@ version: "2.2"
 services:
   node:
     build: ./.docker/node/build
+    command: ["pnpm", "dev"]
     working_dir: /srv
     stdin_open: true
-    env_file:
-      - .env
-    environment:
-      PATH: /srv/node_modules/.bin:$PATH
-    volumes:
-      - ./:/srv
-      - ./.docker/node/.cache:/home/node/.cache
-      - ./.docker/node/.config:/home/node/.config
-  hardhat:
-    build: ./.docker/node/build
-    working_dir: /srv
-    stdin_open: true
-    command: ["lerna", "run", "--stream", "--scope", "@librt/node", "start"]
     env_file:
       - .env
     environment:
       PATH: /srv/node_modules/.bin:$PATH
     ports:
-      - "8545:8545"
+      - "3000:3000"
     volumes:
       - ./:/srv
       - ./.docker/node/.cache:/home/node/.cache

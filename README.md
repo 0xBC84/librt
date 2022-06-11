@@ -4,27 +4,15 @@ LIBRT
 
 ```
 # Install and run.
+cp .env.example .env
+edit .env
 docker-compose run --rm node pnpm install
 
-# Build.
-docker-compose run --rm node pnpm run build
-docker-compose run --rm node pnpm run lint
-docker-compose run --rm node pnpm run test
-docker-compose run --rm node pnpm run dev
-docker-compose run --rm node pnpm run deploy
+# Start wallet.
+docker-compose up node
 
-# WC Relay.
-docker-compose up -d relay
-```
-
-## Local Environment
-
-Run CLI against a local HardHat Ethereum network.
-
-```
-// .env
-LIBRT_NODE="http://hardhat:8545"
-LIBRT_NETWORK="localhost"
+# Pair with dApp.
+./.bin/run client cli:dev pair:connect --uri='wc:...'
 ```
 
 ## Notes

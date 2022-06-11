@@ -1,8 +1,8 @@
 {
-  "name": "@librt/wallet",
+  "name": "@librt/client",
   "version": "0.0.1",
   "bin": {
-    "librt-wallet": "bin/run"
+    "librt": "bin/run"
   },
   "dependencies": {
     "@librt/chain": "*",
@@ -20,7 +20,8 @@
     "ethers": "^5.5.4",
     "ink": "^3.2.0",
     "oclif": "^3.0.1",
-    "react": "^17.0.2"
+    "react": "^17.0.2",
+    "socket.io-client": "^4.5.1"
   },
   "engines": {
     "node": ">=16.0.0"
@@ -33,7 +34,7 @@
   ],
   "main": "dist/index.js",
   "oclif": {
-    "bin": "librt-wallet",
+    "bin": "librt",
     "commands": "./dist/commands",
     "plugins": [],
     "topicSeparator": ":",
@@ -48,7 +49,8 @@
     "lint:prettier:write": "prettier --write .",
     "lint:prettier": "prettier --check .",
     "lint:eslint": "eslint .",
-    "lint:eslint:write": "eslint --fix ."
+    "lint:eslint:write": "eslint --fix .",
+    "connect": "ts-node connect.ts"
   },
   "types": "dist/index.d.ts"
 }

@@ -3,4 +3,4 @@
 set -e
 set -u
 
-docker-compose run --rm node pnpm --filter "*/$1" cli:dev $2 -- "${@:3}"
+docker-compose run --rm node pnpm --filter "*/$1" $2 "${@:3}"

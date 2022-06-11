@@ -12,14 +12,14 @@ LIBRT Wallet
 
 <!-- usage -->
 ```sh-session
-$ npm install -g @librt/wallet
-$ librt-wallet COMMAND
+$ npm install -g @librt/client
+$ librt COMMAND
 running command...
-$ librt-wallet (--version)
-@librt/wallet/0.0.1 linux-arm64 node-v16.15.0
-$ librt-wallet --help [COMMAND]
+$ librt (--version)
+@librt/client/0.0.1 linux-arm64 node-v16.15.0
+$ librt --help [COMMAND]
 USAGE
-  $ librt-wallet COMMAND
+  $ librt COMMAND
 ...
 ```
 <!-- usagestop -->
@@ -27,26 +27,26 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`librt-wallet account:list`](#librt-wallet-accountlist)
-* [`librt-wallet pair:connect`](#librt-wallet-pairconnect)
+* [`librt account:list`](#librt-accountlist)
+* [`librt pair:connect`](#librt-pairconnect)
 
-## `librt-wallet account:list`
+## `librt account:list`
 
 ```
 USAGE
-  $ librt-wallet account:list
+  $ librt account:list
 
 EXAMPLES
   $ wallet account:list
 ```
 
-## `librt-wallet pair:connect`
+## `librt pair:connect`
 
 Create a pair connection.
 
 ```
 USAGE
-  $ librt-wallet pair:connect -u <value>
+  $ librt pair:connect -u <value>
 
 FLAGS
   -u, --uri=<value>  (required) Connection URI
@@ -55,6 +55,6 @@ DESCRIPTION
   Create a pair connection.
 
 EXAMPLES
-  $ wallet pair:connect --uri=<uri>
+  $ librt pair:connect --uri=<uri>
 ```
 <!-- commandsstop -->
