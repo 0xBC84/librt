@@ -16,12 +16,21 @@ import EventEmitter from "node:events";
 import { truncateAddress } from "@services/common";
 import { Chain } from "@librt/chain";
 import { io, Socket } from "socket.io-client";
+import {
+  SignClientToServerEvents,
+  SignServerToClientEvents,
+} from "@librt/core";
 
 const CLI_EVENT_SESSION_REVIEW_APPROVED = "session.review.approved";
 const CLI_EVENT_SESSION_REVIEW_DENIED = "session.review.denied";
 const CLI_EVENT_EXCEPTION = "exception";
 
 const cli = new EventEmitter();
+
+type SignClientSocket = Socket<
+  SignServerToClientEvents,
+  SignClientToServerEvents
+>;
 
 // @todo Throw error if networks not found.
 const SessionApproval = ({
@@ -222,7 +231,7 @@ const SegmentPairProposal = ({
   socket,
   uri,
 }: {
-  socket: Socket;
+  socket: SignClientSocket;
   uri: string;
 }) => {
   const indicator = useIndicator({
@@ -231,7 +240,7 @@ const SegmentPairProposal = ({
     },
     onLoad: () => {
       return new Promise((resolve) => {
-        socket.emit("sign_client:pair", uri);
+        socket.emit("sign_client:pair", { uri });
         socket.on("sign_client:pair_ok", () => resolve(true));
       });
     },
@@ -251,7 +260,7 @@ const SegmentSessionApproval = ({
   proposal,
   accounts,
 }: {
-  socket: Socket;
+  socket: SignClientSocket;
   proposal: SignClientTypes.EventArguments["session_proposal"];
   accounts: Account[];
 }) => {
@@ -285,7 +294,7 @@ const SegmentSessionApproval = ({
           },
         };
 
-        socket.emit("sign_client:session_approve", JSON.stringify(data));
+        socket.emit("sign_client:session_approve", data);
         socket.on("sign_client:session_approve_ok", () => resolve(true));
       });
     },
@@ -371,7 +380,7 @@ const SegmentSessionException = ({
 const SegmentConnect = ({
   onConnect,
 }: {
-  onConnect: (socket: Socket) => void;
+  onConnect: (socket: SignClientSocket) => void;
 }) => {
   const indicator = useIndicator({
     onTimeout: () => {
@@ -398,7 +407,7 @@ const PairConnect = ({ uri }: { uri: string }) => {
   useForceProcessExit();
 
   const [components, setComponents] = useState<React.ReactNode[]>([]);
-  const [socket, setSocket] = useState<Socket | undefined>();
+  const [socket, setSocket] = useState<SignClientSocket | undefined>();
 
   useEffect(() => {
     setComponents((components: React.ReactNode[]) => [

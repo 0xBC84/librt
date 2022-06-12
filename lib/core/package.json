@@ -1,18 +1,15 @@
 {
-  "name": "@librt/server",
+  "name": "@librt/core",
   "version": "0.0.1",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "scripts": {
-    "dev": "nodemon index.ts"
+    "dev": "tsc -w & tsc-alias -w"
   },
   "dependencies": {
-    "@librt/chain": "*",
-    "@librt/config": "*",
-    "@librt/core": "*",
-    "@librt/ui": "*",
     "@walletconnect/ethereum-provider": "^2.0.0-beta.100",
     "@walletconnect/sign-client": "^2.0.0-beta.100",
     "@walletconnect/types": "^2.0.0-beta.100",
-    "@walletconnect/utils": "^2.0.0-beta.100",
-    "socket.io": "^4.5.1"
+    "@walletconnect/utils": "^2.0.0-beta.100"
   }
 }
