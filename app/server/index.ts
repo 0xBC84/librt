@@ -1,7 +1,6 @@
 import { Server } from "socket.io";
 import { SignClient } from "@walletconnect/sign-client";
 import { getConfig } from "@librt/config";
-import path from "node:path";
 import {
   SignClientToServerEvents,
   SignInterServerEvents,
@@ -19,15 +18,13 @@ import {
   >();
 
   const { wallet, storage } = getConfig();
-  const dbPath = storage.path.replace("$HOME", process.env.HOME || "");
-  const db = path.resolve(dbPath);
 
   const signClient = await SignClient.init({
     metadata: wallet.walletConnect.metadata,
     projectId: wallet.walletConnect.projectId,
     relayUrl: wallet.walletConnect.relayUrl,
     storageOptions: {
-      database: db,
+      database: storage.path,
     },
   });
 

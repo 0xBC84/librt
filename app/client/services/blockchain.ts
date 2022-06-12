@@ -2,10 +2,6 @@ import { isValidChainId } from "@walletconnect/utils";
 import { Chain, getSupportedChainById } from "@librt/chain";
 import { ethers } from "ethers";
 import { getConfig } from "@librt/config";
-import { useEffect, useState } from "react";
-import { SignClient } from "@walletconnect/sign-client";
-import { ISignClient } from "@walletconnect/types";
-import path from "node:path";
 
 type WalletProvider = ethers.Wallet | unknown;
 
@@ -81,33 +77,4 @@ export const getChainByWCId = (chain: string) => {
 
   const [protocol, id] = chain.split(":");
   return getSupportedChainById(protocol, Number(id));
-};
-
-export const useWCClient = ({
-  exceptionHandler,
-}: {
-  exceptionHandler?: (e: Error) => void;
-}) => {
-  const { wallet, storage } = getConfig();
-  const dbPath = storage.path.replace("$HOME", process.env.HOME || "");
-  const db = path.resolve(dbPath);
-
-  const [client, setClient] = useState<ISignClient | null>(null);
-
-  useEffect(() => {
-    SignClient.init({
-      metadata: wallet.walletConnect.metadata,
-      projectId: wallet.walletConnect.projectId,
-      relayUrl: wallet.walletConnect.relayUrl,
-      storageOptions: {
-        database: db,
-      },
-    })
-      .then((wc) => {
-        setClient(wc);
-      })
-      .catch(exceptionHandler);
-  }, [exceptionHandler, wallet, storage, db]);
-
-  return { client };
 };

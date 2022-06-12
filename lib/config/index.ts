@@ -1,4 +1,5 @@
 import config from "./config.json";
+import path from "node:path";
 
 export type Account = {
   name: string;
@@ -30,5 +31,14 @@ export type Config = {
 // @todo Run object validation on config and run in command hook init
 // @todo Validate account.mnemonic is valid
 export const getConfig = (): Config => {
-  return config;
+  const { storage, ...rest } = config as Config;
+  const storagePath = storage.path.replace("$HOME", process.env.HOME || "");
+
+  return {
+    ...rest,
+    storage: {
+      ...storage,
+      path: path.resolve(storagePath),
+    },
+  };
 };
