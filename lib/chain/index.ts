@@ -30,7 +30,6 @@ const CHAINS: Chain[] = data
 
 const PROTOCOL_SUPPORTED = ["eip155"];
 
-// @todo Run object valiedation on config and run in command hook init
 export const getSupportedChainById = (protocol: typeof PROTOCOL_SUPPORTED[number], id: number) => {
   if (!PROTOCOL_SUPPORTED.includes(protocol)) {
     throw new Error(`protocol \`${protocol}\` is not supported.`);
