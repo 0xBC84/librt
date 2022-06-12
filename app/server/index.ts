@@ -9,6 +9,7 @@ import {
 } from "@librt/core";
 
 // @todo Use namespaces
+// @todo Try catch wrap
 (async () => {
   const io = new Server<
     SignClientToServerEvents,
