@@ -74,6 +74,10 @@ import {
   });
 
   signClient.on("session_ping", (data) => {
+    // @todo Remove
+    // eslint-disable-next-line no-console
+    console.log("ping", data);
+
     io.emit("sign_client:session_ping", data);
   });
 
