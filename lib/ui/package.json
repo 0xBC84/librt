@@ -2,7 +2,7 @@
   "name": "@librt/ui",
   "version": "0.0.1",
   "bin": {
-    "display": "./.bin/display.js"
+    "story": ".bin/story.js"
   },
   "dependencies": {
     "ink": "^3.2.0",

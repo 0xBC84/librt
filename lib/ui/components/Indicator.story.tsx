@@ -2,7 +2,7 @@ import React from "react";
 import { render } from "ink";
 import { Indicator, useIndicator } from "@components/Indicator";
 import { Command } from "@oclif/core";
-import { parseArgs } from "@services/display";
+import { parseArgs } from "@services/story";
 
 const Indicate = () => {
   const indicator = useIndicator({

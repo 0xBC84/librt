@@ -1,8 +1,8 @@
 import React from "react";
 import { render } from "ink";
-import { Info } from "@components/Info";
+import { Done } from "@components/Done";
 import { Command, Flags } from "@oclif/core";
-import { parseArgs } from "@services/display";
+import { parseArgs } from "@services/story";
 
 class Example extends Command {
   static flags = {
@@ -11,7 +11,7 @@ class Example extends Command {
 
   async run() {
     const { flags } = await this.parse(Example);
-    render(<Info {...flags} />, { debug: false });
+    render(<Done {...flags} />, { debug: false });
   }
 }
 

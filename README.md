@@ -15,7 +15,7 @@ docker-compose up node
 ./.bin/run client cli:dev pair:connect --uri='wc:...'
 
 # Display UI component.
-./.bin/exec ui display Done --label=COMPLETE
+./.bin/exec ui story Done --label=COMPLETE
 ```
 
 ## Notes
