@@ -1,7 +1,8 @@
 import React from "react";
 import { render } from "ink";
 import { Indicator, useIndicator } from "@components/Indicator";
-import { Command, Flags } from "@oclif/core";
+import { Command } from "@oclif/core";
+import { parseArgs } from "@services/display";
 
 const Indicate = () => {
   const indicator = useIndicator({
@@ -29,6 +30,5 @@ class Example extends Command {
   }
 }
 
-const args = [...process.argv];
-args.splice(0, 3);
+const args = parseArgs();
 Example.run(args);

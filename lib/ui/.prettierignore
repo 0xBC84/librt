@@ -1,5 +1,4 @@
 dist
-bin
+.bin
 README.md
-oclif.manifest.json
 tsconfig.json

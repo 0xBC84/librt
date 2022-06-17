@@ -2,6 +2,7 @@ import React from "react";
 import { render } from "ink";
 import { Done } from "@components/Done";
 import { Command, Flags } from "@oclif/core";
+import { parseArgs } from "@services/display";
 
 class Example extends Command {
   static flags = {
@@ -14,6 +15,5 @@ class Example extends Command {
   }
 }
 
-const args = [...process.argv];
-args.splice(0, 3);
+const args = parseArgs();
 Example.run(args);
