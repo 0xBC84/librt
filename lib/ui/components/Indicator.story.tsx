@@ -3,6 +3,7 @@ import { render } from "ink";
 import { Indicator, useIndicator } from "@components/Indicator";
 import { Command } from "@oclif/core";
 import { parseArgs } from "@services/story";
+import { Layout } from "@components/Layout";
 
 const Indicate = () => {
   const indicator = useIndicator({
@@ -26,7 +27,12 @@ class Example extends Command {
 
   async run() {
     const { flags } = await this.parse(Example);
-    render(<Indicate {...flags} />, { debug: false });
+    render(
+      <Layout>
+        <Indicate {...flags} />
+      </Layout>,
+      { debug: false }
+    );
   }
 }
 

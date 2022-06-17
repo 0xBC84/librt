@@ -3,6 +3,7 @@ import { render } from "ink";
 import { Error } from "@components/Error";
 import { Command, Flags } from "@oclif/core";
 import { parseArgs } from "@services/story";
+import { Layout } from "@components/Layout";
 
 class Example extends Command {
   static flags = {
@@ -11,7 +12,12 @@ class Example extends Command {
 
   async run() {
     const { flags } = await this.parse(Example);
-    render(<Error {...flags} />, { debug: false });
+    render(
+      <Layout>
+        <Error {...flags} />
+      </Layout>,
+      { debug: false }
+    );
   }
 }
 
