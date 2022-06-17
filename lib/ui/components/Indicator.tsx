@@ -21,36 +21,45 @@ type IndicatorHookBindings = {
 export const useIndicator = ({
   onLoad,
   onTimeout,
-  timeout = 10_000,
+  timeoutMs = 10_000,
 }: {
   onLoad: () => Promise<any>;
   onTimeout?: () => void;
-  timeout?: number;
+  timeoutMs?: number;
 }): IndicatorHookBindings => {
   const [isLoading, setLoading] = useState(false);
   const [isComplete, setComplete] = useState(false);
   const [isError, setError] = useState(false);
 
+  // eslint-disable-next-line prefer-const
+  let timeout = useRef<NodeJS.Timeout | null>(null);
+
   const doLoad = () => {
     setLoading(true);
     let isResolved = false;
-    return Promise.race([
-      onLoad()
-        .then(() => {
-          isResolved = true;
-        })
-        .catch(() => setError(true)),
-      new Promise((resolve) => {
-        setTimeout(() => {
-          if (!isResolved) {
-            setError(true);
-            onTimeout && onTimeout();
-          }
 
-          resolve(null);
-        }, timeout);
-      }),
-    ]).finally(() => {
+    // Fire off load hook.
+    const load = onLoad()
+      .then(() => {
+        isResolved = true;
+      })
+      .catch(() => setError(true));
+
+    // Fire off timeout hook.
+    const timer = new Promise((resolve) => {
+      timeout.current = setTimeout(() => {
+        if (!isResolved) {
+          setError(true);
+          onTimeout && onTimeout();
+        }
+
+        resolve(null);
+      }, timeoutMs);
+    });
+
+    // Resolve load or timeout, depending on which is first.
+    return Promise.race([load, timer]).finally(() => {
+      if (timeout.current) clearTimeout(timeout.current);
       setComplete(true);
       setLoading(false);
     });
@@ -91,12 +100,16 @@ export const Indicator = ({
       setStep((step) => (step + 1) % (limit + 1));
     }, 250);
 
+    if (indicator.isComplete) {
+      clearInterval(interval.current);
+    }
+
     return () => {
       if (interval.current) {
         clearInterval(interval.current);
       }
     };
-  }, []);
+  }, [indicator.isComplete]);
 
   // prettier-ignore
   const ellipsisDot = Array.from({ length: step })
