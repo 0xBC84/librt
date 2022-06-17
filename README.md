@@ -13,6 +13,9 @@ docker-compose up node
 
 # Pair with dApp.
 ./.bin/run client cli:dev pair:connect --uri='wc:...'
+
+# Display UI component.
+./.bin/exec ui display Done --label=COMPLETE
 ```
 
 ## Notes
