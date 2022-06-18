@@ -59,6 +59,7 @@ const ModeRender = () => {
         prefixJustify={true}
         onSubmit={onSubmit}
         onCancel={onCancel}
+        isSelectorHidden={true}
       ></Options>
     </Box>
   );

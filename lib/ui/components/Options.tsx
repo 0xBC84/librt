@@ -23,6 +23,7 @@ export type OptionsProps = {
   onCancel: () => void;
   data: Array<OptionsData>;
   isSelectSingle?: boolean;
+  isSelectorHidden?: boolean;
 };
 
 export const Options = (props: OptionsProps) => {
@@ -36,9 +37,9 @@ export const Options = (props: OptionsProps) => {
     onSubmit,
     onCancel,
     isSelectSingle = false,
+    isSelectorHidden = false,
   } = props;
 
-  const isSingleData = data.length === 1;
   const isComplete = useRef(false);
   const { isFocused } = useFocus({ id });
   const [selected, setSelected] = useState(0);
@@ -120,14 +121,14 @@ export const Options = (props: OptionsProps) => {
 
     return (
       <Box flexDirection="row" key={data.id}>
-        {!isSingleData && (
+        {!isSelectorHidden && (
           <Box marginRight={SPACING}>
             <Text color={colorPrimary} bold>
               {isSelected(i) ? "›" : " "}
             </Text>
           </Box>
         )}
-        {!isSingleData && !isSelectSingle && (
+        {!isSelectorHidden && !isSelectSingle && (
           <Box marginRight={SPACING}>
             <Text color={colorPrimary} bold={isBold}>
               {isConfirmed(i) ? "[•]" : "[ ]"}
@@ -177,13 +178,13 @@ export const Options = (props: OptionsProps) => {
             <Text>select</Text>
           </Box>
         )}
-        {!isSingleData && (
+        {!isSelectorHidden && (
           <Box marginRight={SPACING}>
             <Text color="grey">[↑] </Text>
             <Text>up</Text>
           </Box>
         )}
-        {!isSingleData && (
+        {!isSelectorHidden && (
           <Box marginRight={SPACING}>
             <Text color="grey">[↓] </Text>
             <Text>down</Text>
