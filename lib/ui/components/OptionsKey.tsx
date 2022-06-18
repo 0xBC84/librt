@@ -106,7 +106,6 @@ export const OptionsKey = (props: OptionsKeyProps) => {
     if (key.escape) {
       isComplete.current = true;
       onCancel();
-      // onDenied();
     }
   });
 
