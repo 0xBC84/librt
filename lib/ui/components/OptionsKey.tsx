@@ -1,14 +1,16 @@
-import React, { useRef, useState } from "react";
+import React, { ReactNode, useRef, useState } from "react";
 import { Box, Text, useFocus, useInput } from "ink";
 import { getMinWidthFromKey } from "@services/ui";
 
 const SPACING = 1;
 
 type OptionsData = {
+  id: string;
   prefix?: string;
-  label: string;
+  label?: string;
   description?: string;
   suffix?: string;
+  render?: ReactNode;
 };
 
 export type OptionsKeyProps = {
@@ -109,11 +111,12 @@ export const OptionsKey = (props: OptionsKeyProps) => {
   });
 
   const options = data.map((data, i) => {
+    const { render = null } = data;
     const isBold = isSelected(i);
     const colorPrimary = isSelected(i) ? "yellowBright" : "yellow";
 
     return (
-      <Box flexDirection="row" key={data.label + i}>
+      <Box flexDirection="row" key={data.id}>
         {isModeMulti && (
           <Box marginRight={SPACING}>
             <Text color={colorPrimary} bold>
@@ -128,24 +131,27 @@ export const OptionsKey = (props: OptionsKeyProps) => {
             </Text>
           </Box>
         )}
-        {data.prefix && (
+        {!render && data.prefix && (
           <Box marginRight={SPACING} minWidth={minWidthPrefix}>
             <Text color="grey">{data.prefix}</Text>
           </Box>
         )}
-        <Box marginRight={SPACING} minWidth={minWidthLabel}>
-          <Text color={colorPrimary}>{data.label}</Text>
-        </Box>
-        {data.description && (
+        {!render && data.label && (
+          <Box marginRight={SPACING} minWidth={minWidthLabel}>
+            <Text color={colorPrimary}>{data.label}</Text>
+          </Box>
+        )}
+        {!render && data.description && (
           <Box marginRight={SPACING} minWidth={minWidthDescription}>
             <Text>{data.description}</Text>
           </Box>
         )}
-        {data.suffix && (
+        {!render && data.suffix && (
           <Box marginRight={SPACING} minWidth={minWidthSuffix}>
             <Text color="grey">{data.suffix}</Text>
           </Box>
         )}
+        {render}
       </Box>
     );
   });

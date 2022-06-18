@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Box, render, useApp, useFocusManager } from "ink";
+import { Box, Text, render, useApp, useFocusManager } from "ink";
 import { OptionsKey, OptionsKeyProps } from "@components/OptionsKey";
 import { Command, Flags } from "@oclif/core";
 import { parseArgs } from "@services/story";
@@ -7,18 +7,62 @@ import { Layout } from "@components/Layout";
 
 const data = [
   {
+    id: "1",
     prefix: "11.10.22 10:32",
     label: "Oasis",
     description: "Sign Message",
     suffix: "compound.app",
   },
   {
+    id: "2",
     prefix: "11.10.22",
     label: "Oasis",
     description: "Sign Message",
     suffix: "compound.app",
   },
 ];
+
+const ModeChildren = () => {
+  const { focus } = useFocusManager();
+  const { exit } = useApp();
+
+  useEffect(() => {
+    focus("1");
+  }, [focus]);
+
+  const onSubmit: OptionsKeyProps["onSubmit"] = (data) => {
+    // eslint-disable-next-line no-console
+    console.log(data);
+    exit();
+  };
+
+  const onCancel = () => {
+    exit();
+  };
+
+  const data = [
+    {
+      id: "1",
+      render: (
+        <Box>
+          <Text>Hello, World!</Text>
+        </Box>
+      ),
+    },
+  ];
+
+  return (
+    <Box flexDirection="column">
+      <OptionsKey
+        id="1"
+        data={data}
+        prefixJustify={true}
+        onSubmit={onSubmit}
+        onCancel={onCancel}
+      ></OptionsKey>
+    </Box>
+  );
+};
 
 const ModeOptionSingle = () => {
   const { focus } = useFocusManager();
@@ -132,6 +176,7 @@ enum Mode {
   InputSingle = "input-single",
   InputMulti = "input-multi",
   OptionSingle = "option-single",
+  Children = "children",
 }
 
 class Example extends Command {
@@ -151,6 +196,7 @@ class Example extends Command {
         {flags.mode === Mode.InputSingle && <ModeInputSingle />}
         {flags.mode === Mode.InputMulti && <ModeInputMulti />}
         {flags.mode === Mode.OptionSingle && <ModeOptionSingle />}
+        {flags.mode === Mode.Children && <ModeChildren />}
       </Layout>,
       { debug: false }
     );
