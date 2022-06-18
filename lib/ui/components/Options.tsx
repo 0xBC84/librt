@@ -22,7 +22,7 @@ export type OptionsProps = {
   onSubmit: (data: Array<OptionsData>) => void;
   onCancel: () => void;
   data: Array<OptionsData>;
-  isSingleMode?: boolean;
+  isSelectSingle?: boolean;
 };
 
 export const Options = (props: OptionsProps) => {
@@ -35,10 +35,10 @@ export const Options = (props: OptionsProps) => {
     suffixJustify,
     onSubmit,
     onCancel,
-    isSingleMode = false,
+    isSelectSingle = false,
   } = props;
 
-  const _isSingleModel = isSingleMode && data.length === 1;
+  const isSingleData = data.length === 1;
   const isComplete = useRef(false);
   const { isFocused } = useFocus({ id });
   const [selected, setSelected] = useState(0);
@@ -81,12 +81,13 @@ export const Options = (props: OptionsProps) => {
   useInput((input, key) => {
     if (isComplete.current || !isFocused) return;
 
-    if (input === " ") {
+    if (input === " " && !isSelectSingle) {
       toggleConfirmed(selected);
     }
 
     if (key.downArrow) {
       if (selected >= data.length - 1) return;
+      if (isSelectSingle) setConfirmed([selected + 1]);
       setSelected((selected) => selected + 1);
     }
 
@@ -97,8 +98,9 @@ export const Options = (props: OptionsProps) => {
 
     if (key.return) {
       isComplete.current = true;
-      if (_isSingleModel) {
-        onSubmit(data);
+      if (isSelectSingle) {
+        const value = data[selected];
+        onSubmit([value]);
       } else {
         const _confirmed = data.filter((_, i) => confirmed.includes(i));
         onSubmit(_confirmed);
@@ -118,14 +120,14 @@ export const Options = (props: OptionsProps) => {
 
     return (
       <Box flexDirection="row" key={data.id}>
-        {!_isSingleModel && (
+        {!isSingleData && (
           <Box marginRight={SPACING}>
             <Text color={colorPrimary} bold>
               {isSelected(i) ? "›" : " "}
             </Text>
           </Box>
         )}
-        {!_isSingleModel && (
+        {!isSingleData && !isSelectSingle && (
           <Box marginRight={SPACING}>
             <Text color={colorPrimary} bold={isBold}>
               {isConfirmed(i) ? "[•]" : "[ ]"}
@@ -169,19 +171,19 @@ export const Options = (props: OptionsProps) => {
           <Text color="redBright">[ESC] </Text>
           <Text>cancel</Text>
         </Box>
-        {!_isSingleModel && (
+        {!isSelectSingle && (
           <Box marginRight={SPACING}>
             <Text color="grey">[SPACE] </Text>
             <Text>select</Text>
           </Box>
         )}
-        {!_isSingleModel && (
+        {!isSingleData && (
           <Box marginRight={SPACING}>
             <Text color="grey">[↑] </Text>
             <Text>up</Text>
           </Box>
         )}
-        {!_isSingleModel && (
+        {!isSingleData && (
           <Box marginRight={SPACING}>
             <Text color="grey">[↓] </Text>
             <Text>down</Text>

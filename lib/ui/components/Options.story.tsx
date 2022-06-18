@@ -64,6 +64,38 @@ const ModeRender = () => {
   );
 };
 
+const ModeSelectSingle = () => {
+  const { focus } = useFocusManager();
+  const { exit } = useApp();
+
+  useEffect(() => {
+    focus("1");
+  }, [focus]);
+
+  const onSubmit: OptionsProps["onSubmit"] = (data) => {
+    // eslint-disable-next-line no-console
+    console.log(data);
+    exit();
+  };
+
+  const onCancel = () => {
+    exit();
+  };
+
+  return (
+    <Box flexDirection="column">
+      <Options
+        id="1"
+        isSelectSingle={true}
+        data={data}
+        prefixJustify={true}
+        onSubmit={onSubmit}
+        onCancel={onCancel}
+      />
+    </Box>
+  );
+};
+
 const ModeOptionSingle = () => {
   const { focus } = useFocusManager();
   const { exit } = useApp();
@@ -86,7 +118,7 @@ const ModeOptionSingle = () => {
     <Box flexDirection="column">
       <Options
         id="1"
-        isSingleMode={true}
+        isSelectSingle={true}
         data={[data[0]]}
         prefixJustify={true}
         onSubmit={onSubmit}
@@ -178,6 +210,7 @@ enum Mode {
   InputMulti = "input-multi",
   OptionSingle = "option-single",
   Render = "render",
+  SelectSingle = "select-single",
 }
 
 class Example extends Command {
@@ -198,6 +231,7 @@ class Example extends Command {
         {flags.mode === Mode.InputMulti && <ModeInputMulti />}
         {flags.mode === Mode.OptionSingle && <ModeOptionSingle />}
         {flags.mode === Mode.Render && <ModeRender />}
+        {flags.mode === Mode.SelectSingle && <ModeSelectSingle />}
       </Layout>,
       { debug: false }
     );
