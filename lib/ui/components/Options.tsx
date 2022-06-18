@@ -13,7 +13,7 @@ type OptionsData = {
   render?: ReactNode;
 };
 
-export type OptionsKeyProps = {
+export type OptionsProps = {
   id: string;
   prefixJustify?: boolean;
   labelJustify?: boolean;
@@ -24,7 +24,7 @@ export type OptionsKeyProps = {
   data: Array<OptionsData>;
 };
 
-export const OptionsKey = (props: OptionsKeyProps) => {
+export const Options = (props: OptionsProps) => {
   const {
     data,
     id,

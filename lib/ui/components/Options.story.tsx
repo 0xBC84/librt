@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Box, Text, render, useApp, useFocusManager } from "ink";
-import { OptionsKey, OptionsKeyProps } from "@components/OptionsKey";
+import { Options, OptionsProps } from "@components/Options";
 import { Command, Flags } from "@oclif/core";
 import { parseArgs } from "@services/story";
 import { Layout } from "@components/Layout";
@@ -30,7 +30,7 @@ const ModeRender = () => {
     focus("1");
   }, [focus]);
 
-  const onSubmit: OptionsKeyProps["onSubmit"] = (data) => {
+  const onSubmit: OptionsProps["onSubmit"] = (data) => {
     // eslint-disable-next-line no-console
     console.log(data);
     exit();
@@ -53,13 +53,13 @@ const ModeRender = () => {
 
   return (
     <Box flexDirection="column">
-      <OptionsKey
+      <Options
         id="1"
         data={data}
         prefixJustify={true}
         onSubmit={onSubmit}
         onCancel={onCancel}
-      ></OptionsKey>
+      ></Options>
     </Box>
   );
 };
@@ -72,7 +72,7 @@ const ModeOptionSingle = () => {
     focus("1");
   }, [focus]);
 
-  const onSubmit: OptionsKeyProps["onSubmit"] = (data) => {
+  const onSubmit: OptionsProps["onSubmit"] = (data) => {
     // eslint-disable-next-line no-console
     console.log(data);
     exit();
@@ -84,7 +84,7 @@ const ModeOptionSingle = () => {
 
   return (
     <Box flexDirection="column">
-      <OptionsKey
+      <Options
         id="1"
         data={[data[0]]}
         prefixJustify={true}
@@ -103,7 +103,7 @@ const ModeInputSingle = () => {
     focus("1");
   }, [focus]);
 
-  const onSubmit: OptionsKeyProps["onSubmit"] = (data) => {
+  const onSubmit: OptionsProps["onSubmit"] = (data) => {
     // eslint-disable-next-line no-console
     console.log(data);
     exit();
@@ -115,7 +115,7 @@ const ModeInputSingle = () => {
 
   return (
     <Box flexDirection="column">
-      <OptionsKey
+      <Options
         id="1"
         data={data}
         prefixJustify={true}
@@ -134,13 +134,13 @@ const ModeInputMulti = () => {
     focus("1");
   }, [focus]);
 
-  const onSubmit1: OptionsKeyProps["onSubmit"] = (data) => {
+  const onSubmit1: OptionsProps["onSubmit"] = (data) => {
     focus("2");
     // eslint-disable-next-line no-console
     console.log(data);
   };
 
-  const onSubmit2: OptionsKeyProps["onSubmit"] = (data) => {
+  const onSubmit2: OptionsProps["onSubmit"] = (data) => {
     // eslint-disable-next-line no-console
     console.log(data);
     exit();
@@ -152,7 +152,7 @@ const ModeInputMulti = () => {
 
   return (
     <Box flexDirection="column">
-      <OptionsKey
+      <Options
         id="1"
         data={data}
         prefixJustify={true}
@@ -160,7 +160,7 @@ const ModeInputMulti = () => {
         onCancel={onCancel}
       />
       <Box marginTop={1}>
-        <OptionsKey
+        <Options
           id="2"
           data={data}
           prefixJustify={true}
