@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Text } from "ink";
+import { getMinWidthFromKey } from "@services/ui";
 
 export type DataListProps = {
   data: Array<{ label: string; value: string[] }>;
@@ -8,10 +9,7 @@ export type DataListProps = {
 export const DataList = ({ data }: DataListProps) => {
   const labelMargin = 5;
 
-  const labelWidth = data.reduce((width, { label }) => {
-    if (label.length > width) return label.length;
-    return width;
-  }, 0);
+  const labelWidth = getMinWidthFromKey(data, "label");
 
   const list = data.map((data) => (
     <Box flexDirection="row" key={data.label}>
