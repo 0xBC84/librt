@@ -86,6 +86,7 @@ const ModeOptionSingle = () => {
     <Box flexDirection="column">
       <Options
         id="1"
+        isSingleMode={true}
         data={[data[0]]}
         prefixJustify={true}
         onSubmit={onSubmit}

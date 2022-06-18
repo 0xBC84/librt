@@ -22,6 +22,7 @@ export type OptionsProps = {
   onSubmit: (data: Array<OptionsData>) => void;
   onCancel: () => void;
   data: Array<OptionsData>;
+  isSingleMode?: boolean;
 };
 
 export const Options = (props: OptionsProps) => {
@@ -34,9 +35,10 @@ export const Options = (props: OptionsProps) => {
     suffixJustify,
     onSubmit,
     onCancel,
+    isSingleMode = false,
   } = props;
 
-  const isModeMulti = data.length > 1;
+  const _isSingleModel = isSingleMode && data.length === 1;
   const isComplete = useRef(false);
   const { isFocused } = useFocus({ id });
   const [selected, setSelected] = useState(0);
@@ -95,11 +97,11 @@ export const Options = (props: OptionsProps) => {
 
     if (key.return) {
       isComplete.current = true;
-      if (isModeMulti) {
+      if (_isSingleModel) {
+        onSubmit(data);
+      } else {
         const _confirmed = data.filter((_, i) => confirmed.includes(i));
         onSubmit(_confirmed);
-      } else {
-        onSubmit(data);
       }
     }
 
@@ -116,14 +118,14 @@ export const Options = (props: OptionsProps) => {
 
     return (
       <Box flexDirection="row" key={data.id}>
-        {isModeMulti && (
+        {!_isSingleModel && (
           <Box marginRight={SPACING}>
             <Text color={colorPrimary} bold>
               {isSelected(i) ? "›" : " "}
             </Text>
           </Box>
         )}
-        {isModeMulti && (
+        {!_isSingleModel && (
           <Box marginRight={SPACING}>
             <Text color={colorPrimary} bold={isBold}>
               {isConfirmed(i) ? "[•]" : "[ ]"}
@@ -167,19 +169,19 @@ export const Options = (props: OptionsProps) => {
           <Text color="redBright">[ESC] </Text>
           <Text>cancel</Text>
         </Box>
-        {isModeMulti && (
+        {!_isSingleModel && (
           <Box marginRight={SPACING}>
             <Text color="grey">[SPACE] </Text>
             <Text>select</Text>
           </Box>
         )}
-        {isModeMulti && (
+        {!_isSingleModel && (
           <Box marginRight={SPACING}>
             <Text color="grey">[↑] </Text>
             <Text>up</Text>
           </Box>
         )}
-        {isModeMulti && (
+        {!_isSingleModel && (
           <Box marginRight={SPACING}>
             <Text color="grey">[↓] </Text>
             <Text>down</Text>
