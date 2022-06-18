@@ -22,7 +22,7 @@ const data = [
   },
 ];
 
-const ModeChildren = () => {
+const ModeRender = () => {
   const { focus } = useFocusManager();
   const { exit } = useApp();
 
@@ -176,7 +176,7 @@ enum Mode {
   InputSingle = "input-single",
   InputMulti = "input-multi",
   OptionSingle = "option-single",
-  Children = "children",
+  Render = "render",
 }
 
 class Example extends Command {
@@ -196,7 +196,7 @@ class Example extends Command {
         {flags.mode === Mode.InputSingle && <ModeInputSingle />}
         {flags.mode === Mode.InputMulti && <ModeInputMulti />}
         {flags.mode === Mode.OptionSingle && <ModeOptionSingle />}
-        {flags.mode === Mode.Children && <ModeChildren />}
+        {flags.mode === Mode.Render && <ModeRender />}
       </Layout>,
       { debug: false }
     );
