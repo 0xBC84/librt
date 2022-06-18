@@ -51,7 +51,7 @@ const SessionApproval = ({
 
   useEffect(() => {
     focus("session-approve");
-  }, []);
+  }, [focus]);
 
   // @todo Suport multiple namespaces.
   // @todo Throw error if namespace not found.
@@ -100,6 +100,7 @@ const SessionInfo = ({
   const namespace = proposal.params.requiredNamespaces.eip155;
 
   const chains: Chain[] = [];
+  // @todo Implement chains unsupported
   const chainsUnsupported: string[] = [];
   const permissions = Object.values(namespace.methods) || [];
 
