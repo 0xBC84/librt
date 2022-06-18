@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Command, Flags } from "@oclif/core";
-import { Box, render, Text, useInput } from "ink";
+import { Box, render, Text, useFocus } from "ink";
 import {
   DataList,
   DataListProps,
@@ -9,6 +9,8 @@ import {
   Indicator,
   Info,
   Layout,
+  Options,
+  OptionsProps,
   useForceProcessExit,
   useIndicator,
 } from "@librt/ui";
@@ -40,110 +42,49 @@ const SessionApproval = ({
   onDenied,
   proposal,
 }: {
-  onApproved: (accounts: Account[]) => void;
+  onApproved: (accounts: string[]) => void;
   onDenied: () => void;
   proposal: SignClientTypes.EventArguments["session_proposal"];
 }) => {
-  let isComplete = false;
   const accounts = getAccounts();
-  const [selected, setSelected] = useState(0);
-  const [approved, setApproved] = useState<number[]>([]);
+  const { focus } = useFocus();
+
+  useEffect(() => {
+    focus("session-approve");
+  }, []);
 
   // @todo Suport multiple namespaces.
   // @todo Throw error if namespace not found.
   const namespace = proposal.params.requiredNamespaces.eip155;
 
-  // @todo Filter any accounts not on proposal
-  const accountList = accounts
+  const handleSubmit: OptionsProps["onSubmit"] = (data) => {
+    const values = data.map((data) => data.id);
+    if (data.length > 0) onApproved(values);
+    else onDenied();
+  };
+
+  const handleCancel = () => {
+    onDenied();
+  };
+
+  const data: OptionsProps["data"] = accounts
     .filter((account) => {
       const chain = [account.protocol, account.network].join(":");
       return namespace.chains.includes(chain);
     })
-    .map((wallet) => ({
-      address: wallet.address,
-      tags: [wallet.name, wallet.chain.chain, wallet.chain.name].join(", "),
+    .map((account) => ({
+      id: account.id,
+      label: truncateAddress(account.address),
+      suffix: [account.chain.chain, account.chain.name].join(", "),
     }));
 
-  const isSelected = (i: number) => {
-    return i === selected;
-  };
-
-  const isApproved = (i: number) => {
-    return approved.includes(i);
-  };
-
-  const toggleApproved = (i: number) => {
-    if (isApproved(i)) {
-      setApproved((approved) => {
-        const _approved = [...approved];
-        _approved.splice(i, 1);
-        return _approved;
-      });
-    } else {
-      setApproved((approved) => [...approved, i]);
-    }
-  };
-
-  useInput((input, key) => {
-    if (input === " ") {
-      toggleApproved(selected);
-    }
-
-    if (key.downArrow) {
-      if (selected >= accountList.length - 1) return;
-      setSelected((selected) => selected + 1);
-    }
-
-    if (key.upArrow) {
-      if (selected === 0) return;
-      setSelected((selected) => selected - 1);
-    }
-
-    if (key.return && !isComplete) {
-      isComplete = true;
-      const approvedAccounts = accounts.filter((_, i) => approved.includes(i));
-      if (approved.length > 0) onApproved(approvedAccounts);
-      else onDenied();
-    }
-
-    if (key.escape && !isComplete) {
-      isComplete = true;
-      onDenied();
-    }
-  });
-
   return (
-    <>
-      <Box flexDirection="column">
-        {accountList.map((account, i) => (
-          <Box flexDirection="row" key={account.address}>
-            <Box minWidth={2}>
-              {isSelected(i) && <Text color="yellowBright">•</Text>}
-            </Box>
-            <Text color="yellowBright">{isApproved(i) ? "[-]" : "[ ]"}</Text>
-            <Text> </Text>
-            <Text color="yellowBright">{truncateAddress(account.address)}</Text>
-            <Text> </Text>
-            <Text color="grey">{account.tags}</Text>
-          </Box>
-        ))}
-        <Box marginTop={1} />
-        <Box flexDirection="row">
-          <Text>
-            <Text color="yellow">[ENTER] </Text>
-            <Text>approve </Text>
-          </Text>
-          <Text>
-            <Text color="yellow">[ESC] </Text>
-            <Text>deny </Text>
-          </Text>
-          <Text>
-            <Text color="yellow">[SPACE] </Text>
-            <Text>select </Text>
-          </Text>
-        </Box>
-      </Box>
-    </>
+    <Options
+      id="session-approve"
+      data={data}
+      onSubmit={handleSubmit}
+      onCancel={handleCancel}
+    />
   );
 };
 
@@ -279,8 +220,14 @@ const SegmentSessionReview = ({
   cli: EventEmitter;
   proposal: SignClientTypes.EventArguments["session_proposal"];
 }) => {
-  const doSessionApproved = (accounts: Account[]) => {
-    cli.emit(CLI_EVENT_SESSION_REVIEW_APPROVED, proposal, accounts);
+  const accounts = getAccounts();
+
+  const doSessionApproved = (values: string[]) => {
+    const _accounts = accounts.filter((account) => {
+      return values.includes(account.id);
+    });
+
+    cli.emit(CLI_EVENT_SESSION_REVIEW_APPROVED, proposal, _accounts);
   };
 
   const doSessionDenied = () => {
