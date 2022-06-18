@@ -75,7 +75,7 @@ const SessionApproval = ({
     .map((account) => ({
       id: account.id,
       label: truncateAddress(account.address),
-      suffix: [account.chain.chain, account.chain.name].join(", "),
+      suffix: [account.chain.name, account.chain.chain].join(" - "),
     }));
 
   return (
