@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Command, Flags } from "@oclif/core";
 import { Box, render, Text, useInput } from "ink";
 import {
+  DataList,
+  DataListProps,
   Done,
   Error,
   Indicator,
@@ -150,7 +152,6 @@ const SessionInfo = ({
 }: {
   proposal: SignClientTypes.EventArguments["session_proposal"];
 }) => {
-  const labelWidth = 15;
   const metadata = proposal.params.proposer.metadata;
 
   // @todo Support multiple namespaces.
@@ -170,61 +171,23 @@ const SessionInfo = ({
     }
   }
 
-  return (
-    <Box flexDirection="column">
-      <Box flexDirection="row">
-        <Box minWidth={labelWidth}>
-          <Text color="grey">name:</Text>
-        </Box>
-        <Box>
-          <Text>{metadata.name}</Text>
-        </Box>
-      </Box>
-      <Box flexDirection="row">
-        <Box minWidth={labelWidth}>
-          <Text color="grey">URL:</Text>
-        </Box>
-        <Box>
-          <Text>{metadata.url}</Text>
-        </Box>
-      </Box>
-      <Box flexDirection="row">
-        <Box minWidth={labelWidth}>
-          <Text color="grey">blockchain:</Text>
-        </Box>
-        <Box flexDirection="column">
-          {chains.map((chain) => (
-            <Text key={chain.chainId}>
-              {chain.name} {chain?.chain ? `(${chain.chain})` : null}
-            </Text>
-          ))}
-          {chainsUnsupported.map((chain) => (
-            <Text key={chain}>{chain} (unsupported)</Text>
-          ))}
-        </Box>
-      </Box>
-      <Box flexDirection="row">
-        <Box minWidth={labelWidth}>
-          <Text color="grey">relay:</Text>
-        </Box>
-        <Box>
-          {proposal.params.relays.map((relay) => (
-            <Text key={relay.protocol}>{relay.protocol}</Text>
-          ))}
-        </Box>
-      </Box>
-      <Box flexDirection="row">
-        <Box minWidth={labelWidth}>
-          <Text color="grey">methods:</Text>
-        </Box>
-        <Box flexDirection="column">
-          {permissions.map((permission) => (
-            <Text key={permission}>{permission}</Text>
-          ))}
-        </Box>
-      </Box>
-    </Box>
-  );
+  const data: DataListProps["data"] = [
+    { label: "name", value: [metadata.name] },
+    { label: "URL", value: [metadata.url] },
+    {
+      label: "blockchain",
+      value: chains.map((chain) => {
+        return [chain.name, chain.chain].filter(Boolean).join(" - ");
+      }),
+    },
+    {
+      label: "relay",
+      value: proposal.params.relays.map((relay) => relay.protocol),
+    },
+    { label: "methods", value: permissions },
+  ];
+
+  return <DataList data={data} />;
 };
 
 const SegmentPairProposal = ({
