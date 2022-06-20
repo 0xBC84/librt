@@ -116,7 +116,6 @@ export const Options = (props: OptionsProps) => {
 
   const options = data.map((data, i) => {
     const { render = null } = data;
-    const isBold = isSelected(i);
     const colorPrimary = isSelected(i) ? "yellowBright" : "yellow";
 
     return (
@@ -130,9 +129,7 @@ export const Options = (props: OptionsProps) => {
         )}
         {!isSelectorHidden && !isSelectSingle && (
           <Box marginRight={SPACING}>
-            <Text color={colorPrimary} bold={isBold}>
-              {isConfirmed(i) ? "[•]" : "[ ]"}
-            </Text>
+            <Text color={colorPrimary}>{isConfirmed(i) ? "[•]" : "[ ]"}</Text>
           </Box>
         )}
         {!render && data.prefix && (

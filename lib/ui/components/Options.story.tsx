@@ -60,7 +60,7 @@ const ModeRender = () => {
         onSubmit={onSubmit}
         onCancel={onCancel}
         isSelectorHidden={true}
-      ></Options>
+      />
     </Box>
   );
 };
