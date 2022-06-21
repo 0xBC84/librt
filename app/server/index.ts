@@ -63,6 +63,16 @@ import {
         console.error(e);
       }
     });
+
+    socket.on("sign_client:event_list", () => {
+      if (!socket.data.signClient) return;
+
+      const values = socket.data.signClient.history.values
+        .reverse()
+        .slice(0, 10);
+
+      socket.emit("sign_client:event_list", values);
+    });
   });
 
   signClient.on("session_proposal", (data) => {

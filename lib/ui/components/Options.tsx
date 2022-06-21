@@ -116,7 +116,7 @@ export const Options = (props: OptionsProps) => {
 
   const options = data.map((data, i) => {
     const { render = null } = data;
-    const colorPrimary = isSelected(i) ? "yellowBright" : "yellow";
+    const colorPrimary = isSelected(i) ? "cyanBright" : "cyan";
 
     return (
       <Box flexDirection="row" key={data.id}>

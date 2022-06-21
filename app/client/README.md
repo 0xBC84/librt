@@ -28,6 +28,7 @@ USAGE
 
 <!-- commands -->
 * [`librt account:list`](#librt-accountlist)
+* [`librt event:list`](#librt-eventlist)
 * [`librt pair:connect`](#librt-pairconnect)
 
 ## `librt account:list`
@@ -38,6 +39,21 @@ USAGE
 
 EXAMPLES
   $ wallet account:list
+```
+
+## `librt event:list`
+
+Create a pair connection.
+
+```
+USAGE
+  $ librt event:list
+
+DESCRIPTION
+  Create a pair connection.
+
+EXAMPLES
+  $ librt event:list
 ```
 
 ## `librt pair:connect`

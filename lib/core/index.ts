@@ -2,7 +2,10 @@ import {
   EngineTypes,
   ISignClient,
   SignClientTypes,
+  JsonRpcRecord,
 } from "@walletconnect/types";
+
+export * from "./sign-client/event";
 
 export interface SignServerToClientEvents {
   "sign_client:ready": () => void;
@@ -26,9 +29,11 @@ export interface SignServerToClientEvents {
   "sign_client:session_delete": (
     data: SignClientTypes.EventArguments["session_delete"]
   ) => void;
+  "sign_client:event_list": (data: JsonRpcRecord[]) => void;
 }
 
 export interface SignClientToServerEvents {
+  "sign_client:event_list": () => void;
   "sign_client:pair": (data: EngineTypes.PairParams) => void;
   "sign_client:session_approve": (data: EngineTypes.ApproveParams) => void;
   "sign_client:session_proposal": (

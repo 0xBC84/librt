@@ -72,6 +72,7 @@ importers:
       '@walletconnect/utils': ^2.0.0-beta.100
       better-sqlite3: 7.x
       bn.js: ^5.2.0
+      date-fns: ^2.28.0
       ethers: ^5.5.4
       ink: ^3.2.0
       oclif: ^3.0.1
@@ -91,6 +92,7 @@ importers:
       '@walletconnect/utils': 2.0.0-beta.100_better-sqlite3@7.5.3
       better-sqlite3: 7.5.3
       bn.js: 5.2.0
+      date-fns: 2.28.0
       ethers: 5.6.1
       ink: 3.2.0_react@17.0.2
       oclif: 3.0.1
